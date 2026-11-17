@@ -152,7 +152,7 @@ Se mantendrán separados:
 - **Validación:** imágenes distintas para comparar configuraciones y modelos.
 - **Prueba final:** imágenes que no se utilizarán durante el entrenamiento ni los ajustes.
 
-No se fija todavía una cantidad final de fotografías: primero construiremos el flujo de recorte y etiquetado, y luego estimaremos el volumen necesario para las ocho clases.
+El mínimo acordado es de 15 fotografías de 15 distribuciones diferentes por grupo. Después de generar el manifiesto, se revisará la cobertura de las ocho clases; si alguna tiene pocos ejemplos, se añadirán capturas dirigidas.
 
 ## Siguiente etapa
 
