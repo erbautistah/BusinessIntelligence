@@ -21,13 +21,13 @@ Aplicación web 2D con un anaquel de 4 filas × 8 columnas (32 posiciones), ocho
 
 Instrucciones: [shelf-generator/README.md](shelf-generator/README.md).
 
-### OpenCV: primera etapa
+### OpenCV y preparación del dataset
 
-Script Python que recibe una fotografía Android, rectifica la perspectiva del anaquel, segmenta las 32 posiciones y detecta ocupado/vacío. Incluye un comparador separado que contrasta esas detecciones con el JSON del generador.
+La primera etapa recibe una fotografía Android, rectifica la perspectiva y detecta posiciones ocupadas/vacías. También se incluye un procesador por lotes que rectifica 15 o más fotografías por grupo, recorta automáticamente las 32 posiciones y las etiqueta mediante el JSON emparejado. Incluye un comparador de detecciones con la referencia.
 
 Instrucciones: [cv-lab/README.md](cv-lab/README.md).
 
-**Límite actual:** el primer script de OpenCV detecta posiciones ocupadas/vacías; todavía no clasifica las ocho categorías de productos ni entrena un modelo ML.
+**Límite actual:** la preparación de recortes ya está automatizada, pero todavía no clasifica las ocho categorías ni entrena un modelo ML. La selección de cuatro esquinas sigue siendo manual por fotografía.
 
 ## Estructura
 
