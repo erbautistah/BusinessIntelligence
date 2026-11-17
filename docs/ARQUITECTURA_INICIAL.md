@@ -113,7 +113,7 @@ Todavía no se ha implementado el recorte etiquetado ni el entrenamiento del cla
 
 Se acordó un mínimo de **15 fotografías completas por grupo**, tomadas con Android, acompañadas de un JSON de referencia por captura.
 
-Plan recomendado: cinco distribuciones (los cuatro escenarios preparados y una personalizada), con tres capturas por distribución. Se varía moderadamente distancia, perspectiva y condiciones de luz. Cuando una distribución se fotografía varias veces, se copia el JSON correspondiente y se renombra con el mismo nombre base de cada foto.
+Plan aplicado: 15 fotografías completas de 15 distribuciones diferentes. Se inicia con los cuatro escenarios predefinidos; se añaden cinco distribuciones personalizadas, tres de baja ocupación o productos concentrados y tres distribuciones con interferencias visuales moderadas. La distancia, perspectiva y condiciones de luz también variarán moderadamente. Cada fotografía tendrá su JSON propio, correspondiente exactamente a esa distribución.
 
 Se incorporó \`cv-lab/preparar_dataset.py\`. En una sola ejecución:
 1. recorre todas las fotografías de \`dataset/images/raw/\`;
@@ -126,7 +126,7 @@ Se incorporó \`cv-lab/preparar_dataset.py\`. En una sola ejecución:
 
 En esta versión se seleccionan cuatro esquinas manualmente **una vez por fotografía**. La automatización de esa localización queda como mejora futura.
 
-Los recortes están organizados en ocho carpetas de producto y una carpeta \`empty/\` para posiciones vacías. Se obtienen hasta 480 recortes por grupo con 15 fotografías; no son 480 imágenes independientes, ya que 32 proceden de la misma captura. La futura división de entrenamiento/validación/prueba se realizará por captura para evitar fuga de datos.
+Los recortes están organizados en ocho carpetas de producto y una carpeta \`empty/\` para posiciones vacías. Se obtienen hasta 480 recortes por grupo con 15 fotografías; no son 480 imágenes independientes, ya que 32 proceden de la misma captura. La separación inicial será por captura (9 entrenamiento, 3 validación y 3 prueba), comprobando antes que las ocho clases estén representadas en cada conjunto. Quince capturas son el mínimo de partida, no una garantía de suficiencia.
 
 ## Separación entre práctica y evaluación
 
