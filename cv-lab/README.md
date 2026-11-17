@@ -1,111 +1,115 @@
-# OpenCV: primera etapa de visión por computadora
+# OpenCV y Machine Learning: visión del anaquel
 
-Esta etapa recibe **solo la fotografía tomada con Android** para procesar el anaquel. El PNG original y el JSON del generador se usan después como referencias de evaluación; no son entradas del reconocimiento.
+Esta carpeta contiene la primera etapa de visión por computadora y el primer clasificador de productos del proyecto.
 
-## Qué hace esta primera versión
+## 1. Detección inicial de ocupación
 
-1. Carga una fotografía JPG/PNG tomada con Android.
-2. Permite seleccionar las cuatro esquinas exteriores de la cuadrícula 4×8.
-3. Corrige la perspectiva con una transformación proyectiva.
-4. Divide la imagen rectificada en 32 posiciones.
-5. Analiza una región central de cada posición en espacio HSV.
-6. Clasifica cada posición como **ocupada** o **vacía** mediante reglas de color.
-7. Guarda una imagen anotada, un CSV y un JSON con los resultados.
+El programa analizar_anaquel.py recibe una fotografía Android, permite seleccionar las cuatro esquinas de la cuadrícula 4×8, corrige la perspectiva y divide el anaquel en 32 posiciones. Después utiliza umbrales HSV (saturación, brillo y proporción de color) para clasificar cada posición como ocupada o vacía.
 
-**Importante:** este primer programa no está entrenado. Usa umbrales fijos de saturación, brillo y proporción de color. Por eso puede procesar una sola foto y dar una respuesta inmediata. Todavía no reconoce las ocho categorías de productos ni constituye un modelo de Machine Learning.
+**Esta detección inicial usa reglas fijas: no es Machine Learning y no identifica las ocho categorías de productos.**
 
-## Requisitos e instalación
-
-- Windows 10/11.
-- Git Bash (MINGW64).
-- Python 3.10 o superior.
-- OpenCV y NumPy.
-
-Desde la raíz del repositorio:
+Desde cv-lab:
 
 ~~~bash
-cd cv-lab
-py -m venv .venv
-source .venv/Scripts/activate
-python -m pip install --upgrade pip
-pip install -r requirements.txt
+python analizar_anaquel.py "dataset/images/raw/captura_001.jpg"
 ~~~
 
-## Dónde guardar las fotografías y etiquetas
+Se deben seleccionar las esquinas en orden: superior izquierda, superior derecha, inferior derecha e inferior izquierda.
 
-Todo se guarda localmente en \`cv-lab/dataset/\`:
+Parámetros disponibles:
+- --saturacion-min: saturación HSV mínima (valor inicial 65).
+- --brillo-min: brillo HSV mínimo (valor inicial 45).
+- --ratio-min: proporción mínima de píxeles de color (valor inicial 0.08).
 
-- \`images/raw/\`: fotografías originales Android.
-- \`images/rectified/\`: fotografías rectificadas.
-- \`images/crops/\`: recortes de posiciones.
-- \`labels/\`: JSON de referencia exportados por el generador.
-- \`manifests/\`: CSV de trazabilidad.
+Cambiar estos umbrales ajusta las reglas, no entrena un modelo.
 
-Cada foto debe tener su JSON con el mismo nombre base. Ejemplo:
+## 2. Preparar las fotografías y etiquetas
+
+Los archivos de captura se guardan localmente dentro de dataset/ y no se suben a GitHub:
+
+- images/raw/: fotografías Android originales.
+- images/rectified/: fotografías rectificadas.
+- images/crops/: recortes de las 32 posiciones.
+- labels/: JSON exportados por el generador.
+- manifests/: CSV de trazabilidad de los recortes.
+
+Cada foto necesita su JSON correspondiente con el mismo nombre base. Ejemplo:
 
 ~~~text
 dataset/images/raw/captura_001.jpg
 dataset/labels/captura_001.json
 ~~~
 
-**Por cada captura solo son obligatorios dos archivos:** JPG Android y JSON correspondiente. El PNG generado por la aplicación es opcional como referencia visual; no se usa como entrada para el procesamiento.
+El JPG Android es la entrada visual. El JSON proporciona la etiqueta de referencia para cada posición; no se usa como entrada visual para reconocer el producto. El PNG exportado por el generador es opcional.
 
-Las carpetas de fotos y recortes están excluidas de GitHub. No hagas \`git add\` ni subas las fotografías al repositorio público.
+Consulta dataset/README.md para el plan de capturas 001–015 y las variaciones previstas.
 
-Consulta \`dataset/README.md\` para el plan exacto de 15 capturas, con qué distribución crear en cada número y los pasos para guardar cada pareja de archivos.
+## 3. Generar los recortes etiquetados
 
-## Procesar una fotografía individual
-
-~~~bash
-python analizar_anaquel.py "dataset/images/raw/captura_001.jpg"
-~~~
-
-Selecciona las cuatro esquinas exteriores de la cuadrícula 4×8, en orden: superior izquierda, superior derecha, inferior derecha, inferior izquierda. Pulsa Enter para confirmar, R para reiniciar o Esc para cancelar.
-
-## Parámetros de las reglas HSV
-
-| Parámetro | Valor inicial | Significado |
-|---|---:|---|
-| \`--saturacion-min\` | 65 | Saturación HSV mínima. |
-| \`--brillo-min\` | 45 | Brillo HSV mínimo. |
-| \`--ratio-min\` | 0.08 | Proporción mínima de píxeles de color para considerar ocupada una posición. |
-
-Ejemplo:
-
-~~~bash
-python analizar_anaquel.py "dataset/images/raw/captura_001.jpg" --saturacion-min 75 --brillo-min 55 --ratio-min 0.10
-~~~
-
-Cambiar estos umbrales es ajustar reglas de procesamiento, no entrenar un modelo ML.
-
-## Comparar detecciones con la referencia
-
-El JSON interviene después del reconocimiento, únicamente para comparar el resultado con la distribución conocida:
-
-~~~bash
-python comparar_referencia.py --detecciones salida_cv/detecciones.csv --referencia "dataset/labels/captura_001.json"
-~~~
-
-El comparador calcula métricas para ocupado/vacío; no evalúa la clasificación de las ocho categorías.
-
-## Preparar recortes etiquetados de todas las fotografías
-
-Primero guarda las 15 parejas de archivos indicadas en \`dataset/README.md\`. Después, desde \`cv-lab/\`, ejecuta una sola vez:
+Después de guardar las parejas JPG + JSON, ejecutar una sola vez desde cv-lab:
 
 ~~~bash
 python preparar_dataset.py
 ~~~
 
-El programa recorre todas las fotos de \`dataset/images/raw/\`, busca el JSON correspondiente en \`dataset/labels/\`, solicita cuatro esquinas por fotografía, rectifica el anaquel y recorta automáticamente las 32 posiciones. Los recortes se organizan en carpetas por clase y se registra su origen y etiqueta en \`dataset/manifests/recortes.csv\`.
+El programa procesa cada fotografía, solicita las cuatro esquinas, rectifica el anaquel, recorta las 32 posiciones y guarda cada recorte en la carpeta indicada por el product_id del JSON. La posición sin producto se guarda en empty/. También genera manifests/recortes.csv.
 
-No se ejecuta 15 veces; se hace una sola ejecución por lote. La selección de esquinas sigue siendo manual una vez por foto.
+El etiquetado se obtiene del JSON: el programa todavía no aprende a reconocer cereal, leche, agua u otras categorías.
 
-## Uso de los recortes
+## 4. Entrenar el primer modelo HOG + SVM
 
-Los recortes servirán para construir un dataset de ocho categorías y entrenar un clasificador. \`empty/\` se mantiene como posición vacía, no como uno de los ocho productos.
+Desde cv-lab, con el entorno virtual activado:
 
-La división de entrenamiento, validación y prueba se hará por captura/configuración: no mezclar recortes de una misma fotografía entre conjuntos. Quince capturas producen hasta 480 recortes, pero no equivalen a 480 fotografías independientes. Después se revisará la cobertura por clase y se decidirá si hacen falta más capturas.
+~~~bash
+python entrenar_modelo.py
+~~~
 
-## Siguiente etapa
+El script realiza lo siguiente:
 
-Después de validar y revisar los recortes, desarrollaremos el entrenamiento de un clasificador clásico (HOG + SVM) y evaluaremos sus resultados con capturas separadas.
+1. Lee manifests/recortes.csv y verifica las rutas de los recortes.
+2. Separa por fotografía completa para evitar que recortes de una misma captura aparezcan en más de un conjunto:
+   - Capturas 001–009: entrenamiento.
+   - Capturas 010–012: validación.
+   - Capturas 013–015: prueba final.
+3. Extrae características HOG de cada recorte en escala de grises. HOG representa bordes y orientaciones de gradiente.
+4. Entrena un SVM multiclase lineal con las muestras de entrenamiento. Las clases se obtienen de los identificadores del manifiesto; normalmente son ocho productos y empty.
+5. Evalúa con validación y prueba, sin usar estas imágenes para entrenar el SVM.
+
+El programa se detiene si falta alguna categoría en entrenamiento. Si una categoría no aparece en validación o prueba, emite una advertencia: no se puede medir su rendimiento en ese conjunto.
+
+La división 9/3/3 conserva la planificación original de variaciones: las capturas de prueba 013–015 contienen condiciones menos favorables. Es una primera evaluación controlada, no una garantía de generalización.
+
+### Archivos de salida
+
+Se guardan localmente en salida_ml/ (excluida de GitHub):
+
+- modelo_hog_svm.yml: clasificador entrenado.
+- modelo_hog_svm.json: clases y configuración del modelo.
+- resultados.json: resumen de las métricas.
+- matriz_confusion_validation.csv y matriz_confusion_test.csv.
+- metricas_por_clase_validation.csv y metricas_por_clase_test.csv.
+- errores_validation.csv y errores_test.csv: recortes que el modelo clasificó incorrectamente.
+
+Métricas:
+- Accuracy: proporción total de predicciones correctas.
+- Precision: de las predicciones asignadas a una clase, cuántas fueron correctas.
+- Recall: de los ejemplos reales de una clase, cuántos identificó.
+- F1: equilibrio entre precision y recall.
+- Matriz de confusión: muestra qué categorías confunde el modelo.
+
+El valor de prueba es la referencia principal de esta primera versión. No se debe ajustar el modelo mirando repetidamente el conjunto de prueba; los cambios se deben orientar con entrenamiento y validación.
+
+## 5. Comparar la detección de ocupación con el JSON
+
+Esta evaluación independiente compara ocupado/vacío, no las ocho categorías:
+
+~~~bash
+python comparar_referencia.py --detecciones salida_cv/detecciones.csv --referencia "dataset/labels/captura_001.json"
+~~~
+
+## 6. Limitaciones conocidas
+
+- Las ocho clases usan ilustraciones controladas del generador, no empaques comerciales reales.
+- HOG + SVM constituye una línea base clásica y ligera; puede confundir productos con formas o diseños parecidos.
+- Los 480 recortes no son 480 fotografías independientes: los 32 recortes de una captura comparten iluminación, perspectiva y condiciones de cámara.
+- La siguiente fase, después de evaluar esta línea base, será construir un generador independiente con nuevos diseños visuales para probar qué tanto generaliza el modelo.
