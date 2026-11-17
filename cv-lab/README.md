@@ -14,14 +14,12 @@ Esta etapa recibe **solo la fotografía tomada con Android** para procesar el an
 
 **Importante:** este primer programa no está entrenado. Usa umbrales fijos de saturación, brillo y proporción de color. Por eso puede procesar una sola foto y dar una respuesta inmediata. Todavía no reconoce las ocho categorías de productos ni constituye un modelo de Machine Learning.
 
-## Requisitos
+## Requisitos e instalación
 
 - Windows 10/11.
-- Git Bash (MINGW64) o una terminal Bash compatible.
+- Git Bash (MINGW64).
 - Python 3.10 o superior.
-- OpenCV y NumPy instalados desde requirements.txt.
-
-## Instalación en Git Bash
+- OpenCV y NumPy.
 
 Desde la raíz del repositorio:
 
@@ -33,411 +31,81 @@ python -m pip install --upgrade pip
 pip install -r requirements.txt
 ~~~
 
-Verifica la instalación:
+## Dónde guardar las fotografías y etiquetas
 
-~~~bash
-python -c "import cv2; print(cv2.__version__)"
-~~~
+Todo se guarda localmente en \`cv-lab/dataset/\`:
 
-## Dónde guardar las fotografías
+- \`images/raw/\`: fotografías originales Android.
+- \`images/rectified/\`: fotografías rectificadas.
+- \`images/crops/\`: recortes de posiciones.
+- \`labels/\`: JSON de referencia exportados por el generador.
+- \`manifests/\`: CSV de trazabilidad.
 
-La carpeta del conjunto de datos está en cv-lab/dataset/:
-
-- images/raw/: fotografías originales de Android. No editarlas.
-- images/rectified/: imágenes rectificadas que generará OpenCV.
-- images/crops/: recortes individuales de las posiciones/productos para la futura clasificación.
-- labels/: JSON exportado por el generador que describe la distribución real del anaquel.
-
-Cada fotografía debe tener un JSON con el mismo nombre base:
+Cada foto debe tener su JSON con el mismo nombre base. Ejemplo:
 
 ~~~text
-dataset/
-├── images/
-│   ├── raw/
-│   │   ├── captura_001.jpg
-│   │   └── captura_002.jpg
-│   ├── rectified/
-│   └── crops/
-└── labels/
-    ├── captura_001.json
-    └── captura_002.json
+dataset/images/raw/captura_001.jpg
+dataset/labels/captura_001.json
 ~~~
 
-Por ejemplo, captura_001.jpg debe corresponder a captura_001.json. Si se fotografía varias veces una misma distribución, se puede duplicar su JSON de referencia con el nombre de cada fotografía.
+**Por cada captura solo son obligatorios dos archivos:** JPG Android y JSON correspondiente. El PNG generado por la aplicación es opcional como referencia visual; no se usa como entrada para el procesamiento.
 
-Las carpetas locales de imágenes no se suben automáticamente a GitHub: se excluyen para evitar que el repositorio crezca con fotografías pesadas. Cada grupo conservará su conjunto de datos en su laptop.
+Las carpetas de fotos y recortes están excluidas de GitHub. No hagas \`git add\` ni subas las fotografías al repositorio público.
 
-Consulta dataset/README.md para las reglas de captura y organización.
+Consulta \`dataset/README.md\` para el plan exacto de 15 capturas, con qué distribución crear en cada número y los pasos para guardar cada pareja de archivos.
 
-## Ejecutar una fotografía
-
-Copia una fotografía Android en images/raw/, por ejemplo captura_001.jpg.
-
-Desde cv-lab/, con el entorno virtual activo:
+## Procesar una fotografía individual
 
 ~~~bash
 python analizar_anaquel.py "dataset/images/raw/captura_001.jpg"
 ~~~
 
-Se abrirá una ventana para seleccionar cuatro esquinas. Haz clic en los límites exteriores de la cuadrícula 4×8, no en el marco exterior del anaquel:
+Selecciona las cuatro esquinas exteriores de la cuadrícula 4×8, en orden: superior izquierda, superior derecha, inferior derecha, inferior izquierda. Pulsa Enter para confirmar, R para reiniciar o Esc para cancelar.
 
-1. Superior izquierda.
-2. Superior derecha.
-3. Inferior derecha.
-4. Inferior izquierda.
-
-Pulsa **Enter** para confirmar. Usa **R** para reiniciar o **Esc** para cancelar.
-
-Por defecto, los resultados se guardan en salida_cv/. Para guardar la imagen rectificada en la carpeta del dataset:
-
-~~~bash
-python analizar_anaquel.py "dataset/images/raw/captura_001.jpg" --salida "dataset/images/rectified/captura_001"
-~~~
-
-## Probar y modificar los parámetros
-
-El algoritmo actual utiliza tres umbrales configurables desde la terminal:
+## Parámetros de las reglas HSV
 
 | Parámetro | Valor inicial | Significado |
 |---|---:|---|
-| --saturacion-min | 65 | Saturación HSV mínima de un píxel. |
-| --brillo-min | 45 | Brillo HSV mínimo de un píxel. |
-| --ratio-min | 0.08 | Proporción mínima de píxeles que deben superar los umbrales para considerar ocupada la posición. |
+| \`--saturacion-min\` | 65 | Saturación HSV mínima. |
+| \`--brillo-min\` | 45 | Brillo HSV mínimo. |
+| \`--ratio-min\` | 0.08 | Proporción mínima de píxeles de color para considerar ocupada una posición. |
 
-Ejemplo para cambiar los parámetros:
+Ejemplo:
 
 ~~~bash
 python analizar_anaquel.py "dataset/images/raw/captura_001.jpg" --saturacion-min 75 --brillo-min 55 --ratio-min 0.10
 ~~~
 
-Los valores son puntos de partida, no valores universales. Conviene ejecutar la misma fotografía con distintos parámetros y después repetir la comparación con otras fotografías.
+Cambiar estos umbrales es ajustar reglas de procesamiento, no entrenar un modelo ML.
 
-**Ajustar estos umbrales no es entrenar un modelo ML.** Es experimentar con reglas de procesamiento de imágenes.
+## Comparar detecciones con la referencia
 
-## Archivos de salida
-
-Se crea la carpeta indicada mediante --salida:
-
-- anaquel_rectificado.png: cuadrícula transformada a una vista frontal.
-- resultado_ocupacion.png: posiciones marcadas en verde (ocupadas) y naranja (vacías).
-- detecciones.csv: una fila por posición, con estado y proporción de píxeles de color.
-- resultado.json: método, parámetros utilizados y resultados.
-
-## Comparar contra la respuesta esperada
-
-El JSON se utiliza solo después de la detección. Compara el CSV producido por OpenCV con el JSON correspondiente a esa fotografía:
+El JSON interviene después del reconocimiento, únicamente para comparar el resultado con la distribución conocida:
 
 ~~~bash
 python comparar_referencia.py --detecciones salida_cv/detecciones.csv --referencia "dataset/labels/captura_001.json"
 ~~~
 
-El comparador calcula exactitud, precisión, recall y F1 para ocupado/vacío. No evalúa la clasificación de las ocho categorías.
+El comparador calcula métricas para ocupado/vacío; no evalúa la clasificación de las ocho categorías.
 
-Si guardaste los resultados en otra ubicación, ajusta la ruta de --detecciones.
+## Preparar recortes etiquetados de todas las fotografías
 
-## Por qué necesitamos varias fotografías
-
-Una foto basta para ejecutar las reglas actuales, pero **no basta para demostrar robustez ni para entrenar un clasificador de productos**.
-
-Se recopilarán fotografías con variaciones controladas:
-- Distintas distribuciones de productos generadas por el simulador.
-- Diferentes celulares Android, cuando sea posible.
-- Distancia y ángulo ligeramente distintos.
-- Diferentes condiciones de brillo de pantalla y luz ambiente.
-
-Cada foto debe tener su JSON de referencia emparejado por nombre. No se debe usar la misma imagen o una copia casi idéntica simultáneamente para entrenamiento y prueba.
-
-Se mantendrán separados:
-- **Entrenamiento:** imágenes etiquetadas con las que se ajustará el clasificador.
-- **Validación:** imágenes distintas para comparar configuraciones y modelos.
-- **Prueba final:** imágenes que no se utilizarán durante el entrenamiento ni los ajustes.
-
-El mínimo acordado es de 15 fotografías de 15 distribuciones diferentes por grupo. Después de generar el manifiesto, se revisará la cobertura de las ocho clases; si alguna tiene pocos ejemplos, se añadirán capturas dirigidas.
-
-## Siguiente etapa
-
-Después de recoger varias fotografías, se desarrollará el flujo para:
-1. Rectificar cada foto.
-2. Recortar las 32 posiciones.
-3. Asociar cada recorte con la clase indicada por su JSON.
-4. Construir un dataset de las ocho clases.
-5. Entrenar y evaluar un clasificador de Machine Learning con imágenes separadas por captura.
-
-
-## Preparar los recortes etiquetados de varias fotografías
-
-Después de guardar los originales y sus JSON correspondientes, ejecuta una sola vez:
+Primero guarda las 15 parejas de archivos indicadas en \`dataset/README.md\`. Después, desde \`cv-lab/\`, ejecuta una sola vez:
 
 ~~~bash
 python preparar_dataset.py
 ~~~
 
-El programa:
-1. Busca todas las fotografías de images/raw/.
-2. Busca el JSON del mismo nombre base en labels/.
-3. Abre el selector de esquinas **una vez por fotografía**. Se deben seleccionar las cuatro esquinas exteriores de la cuadrícula 4×8 y pulsar Enter.
-4. Rectifica la foto y guarda una copia en images/rectified/.
-5. Extrae automáticamente las 32 regiones de producto, sin incluir los nombres ni los precios que aparecen debajo.
-6. Utiliza el JSON para etiquetar cada recorte y guardarlo en images/crops/{clase}/.
-7. Registra todos los recortes en manifests/recortes.csv.
+El programa recorre todas las fotos de \`dataset/images/raw/\`, busca el JSON correspondiente en \`dataset/labels/\`, solicita cuatro esquinas por fotografía, rectifica el anaquel y recorta automáticamente las 32 posiciones. Los recortes se organizan en carpetas por clase y se registra su origen y etiqueta en \`dataset/manifests/recortes.csv\`.
 
-Ejemplo de salida:
+No se ejecuta 15 veces; se hace una sola ejecución por lote. La selección de esquinas sigue siendo manual una vez por foto.
 
-~~~text
-images/crops/
-├── water/
-├── milk/
-├── soda/
-├── juice/
-├── cookies/
-├── cereal/
-├── canned/
-├── detergent/
-└── empty/
-~~~
+## Uso de los recortes
 
-Cada imagen recortada recibe un nombre que conserva la captura y la posición, por ejemplo \`captura_001_slot_03.png\`.
+Los recortes servirán para construir un dataset de ocho categorías y entrenar un clasificador. \`empty/\` se mantiene como posición vacía, no como uno de los ocho productos.
 
-### Comportamiento del lote
-
-- **No se ejecuta el script 15 veces:** una sola ejecución recorre todas las fotos que encuentre.
-- **Sí se marcan cuatro esquinas por fotografía** en esta versión. Como cada captura puede variar en perspectiva, todavía no hacemos una detección automática de esquinas.
-- Pulsa Esc en la ventana de selección para cancelar el lote.
-- Si vuelves a ejecutar el proceso, los recortes se generan de nuevo. Usa \`--sobrescribir\` cuando quieras forzar la sustitución de archivos existentes.
-
-Opciones de rutas:
-
-~~~bash
-python preparar_dataset.py --help
-~~~
-
-El manifiesto es una tabla de trazabilidad: permite saber de qué fotografía y posición procede cada recorte y cuál es su etiqueta. No es todavía un conjunto de entrenamiento dividido.
-
-### Mínimo de fotografías
-
-Cada grupo reunirá al menos 15 fotografías completas de **15 distribuciones diferentes**, cada una con su JSON asociado. Consulta dataset/README.md para el plan de captura: cuatro escenarios predefinidos, cinco personalizados, tres de baja ocupación/concentración y tres con interferencias visuales moderadas.
-
-Quince fotografías producen hasta 480 recortes. Los recortes de una captura se mantendrán juntos al dividir entrenamiento, validación y prueba. Quince es un mínimo de partida; se revisará la cobertura de las ocho categorías antes de considerar suficiente el dataset.
-
-Esta etapa recibe **solo la fotografía tomada con Android** para procesar el anaquel. El PNG original y el JSON del generador se usan después como referencias de evaluación; no son entradas del reconocimiento.
-
-## Qué hace esta primera versión
-
-1. Carga una fotografía JPG/PNG tomada con Android.
-2. Permite seleccionar las cuatro esquinas exteriores de la cuadrícula 4×8.
-3. Corrige la perspectiva con una transformación proyectiva.
-4. Divide la imagen rectificada en 32 posiciones.
-5. Analiza una región central de cada posición en espacio HSV.
-6. Clasifica cada posición como **ocupada** o **vacía** mediante reglas de color.
-7. Guarda una imagen anotada, un CSV y un JSON con los resultados.
-
-**Importante:** este primer programa no está entrenado. Usa umbrales fijos de saturación, brillo y proporción de color. Por eso puede procesar una sola foto y dar una respuesta inmediata. Todavía no reconoce las ocho categorías de productos ni constituye un modelo de Machine Learning.
-
-## Requisitos
-
-- Windows 10/11.
-- Git Bash (MINGW64) o una terminal Bash compatible.
-- Python 3.10 o superior.
-- OpenCV y NumPy instalados desde requirements.txt.
-
-## Instalación en Git Bash
-
-Desde la raíz del repositorio:
-
-~~~bash
-cd cv-lab
-py -m venv .venv
-source .venv/Scripts/activate
-python -m pip install --upgrade pip
-pip install -r requirements.txt
-~~~
-
-Verifica la instalación:
-
-~~~bash
-python -c "import cv2; print(cv2.__version__)"
-~~~
-
-## Dónde guardar las fotografías
-
-La carpeta del conjunto de datos está en cv-lab/dataset/:
-
-- images/raw/: fotografías originales de Android. No editarlas.
-- images/rectified/: imágenes rectificadas que generará OpenCV.
-- images/crops/: recortes individuales de las posiciones/productos para la futura clasificación.
-- labels/: JSON exportado por el generador que describe la distribución real del anaquel.
-
-Cada fotografía debe tener un JSON con el mismo nombre base:
-
-~~~text
-dataset/
-├── images/
-│   ├── raw/
-│   │   ├── captura_001.jpg
-│   │   └── captura_002.jpg
-│   ├── rectified/
-│   └── crops/
-└── labels/
-    ├── captura_001.json
-    └── captura_002.json
-~~~
-
-Por ejemplo, captura_001.jpg debe corresponder a captura_001.json. Si se fotografía varias veces una misma distribución, se puede duplicar su JSON de referencia con el nombre de cada fotografía.
-
-Las carpetas locales de imágenes no se suben automáticamente a GitHub: se excluyen para evitar que el repositorio crezca con fotografías pesadas. Cada grupo conservará su conjunto de datos en su laptop.
-
-Consulta dataset/README.md para las reglas de captura y organización.
-
-## Ejecutar una fotografía
-
-Copia una fotografía Android en images/raw/, por ejemplo captura_001.jpg.
-
-Desde cv-lab/, con el entorno virtual activo:
-
-~~~bash
-python analizar_anaquel.py "dataset/images/raw/captura_001.jpg"
-~~~
-
-Se abrirá una ventana para seleccionar cuatro esquinas. Haz clic en los límites exteriores de la cuadrícula 4×8, no en el marco exterior del anaquel:
-
-1. Superior izquierda.
-2. Superior derecha.
-3. Inferior derecha.
-4. Inferior izquierda.
-
-Pulsa **Enter** para confirmar. Usa **R** para reiniciar o **Esc** para cancelar.
-
-Por defecto, los resultados se guardan en salida_cv/. Para guardar la imagen rectificada en la carpeta del dataset:
-
-~~~bash
-python analizar_anaquel.py "dataset/images/raw/captura_001.jpg" --salida "dataset/images/rectified/captura_001"
-~~~
-
-## Probar y modificar los parámetros
-
-El algoritmo actual utiliza tres umbrales configurables desde la terminal:
-
-| Parámetro | Valor inicial | Significado |
-|---|---:|---|
-| --saturacion-min | 65 | Saturación HSV mínima de un píxel. |
-| --brillo-min | 45 | Brillo HSV mínimo de un píxel. |
-| --ratio-min | 0.08 | Proporción mínima de píxeles que deben superar los umbrales para considerar ocupada la posición. |
-
-Ejemplo para cambiar los parámetros:
-
-~~~bash
-python analizar_anaquel.py "dataset/images/raw/captura_001.jpg" --saturacion-min 75 --brillo-min 55 --ratio-min 0.10
-~~~
-
-Los valores son puntos de partida, no valores universales. Conviene ejecutar la misma fotografía con distintos parámetros y después repetir la comparación con otras fotografías.
-
-**Ajustar estos umbrales no es entrenar un modelo ML.** Es experimentar con reglas de procesamiento de imágenes.
-
-## Archivos de salida
-
-Se crea la carpeta indicada mediante --salida:
-
-- anaquel_rectificado.png: cuadrícula transformada a una vista frontal.
-- resultado_ocupacion.png: posiciones marcadas en verde (ocupadas) y naranja (vacías).
-- detecciones.csv: una fila por posición, con estado y proporción de píxeles de color.
-- resultado.json: método, parámetros utilizados y resultados.
-
-## Comparar contra la respuesta esperada
-
-El JSON se utiliza solo después de la detección. Compara el CSV producido por OpenCV con el JSON correspondiente a esa fotografía:
-
-~~~bash
-python comparar_referencia.py --detecciones salida_cv/detecciones.csv --referencia "dataset/labels/captura_001.json"
-~~~
-
-El comparador calcula exactitud, precisión, recall y F1 para ocupado/vacío. No evalúa la clasificación de las ocho categorías.
-
-Si guardaste los resultados en otra ubicación, ajusta la ruta de --detecciones.
-
-## Por qué necesitamos varias fotografías
-
-Una foto basta para ejecutar las reglas actuales, pero **no basta para demostrar robustez ni para entrenar un clasificador de productos**.
-
-Se recopilarán fotografías con variaciones controladas:
-- Distintas distribuciones de productos generadas por el simulador.
-- Diferentes celulares Android, cuando sea posible.
-- Distancia y ángulo ligeramente distintos.
-- Diferentes condiciones de brillo de pantalla y luz ambiente.
-
-Cada foto debe tener su JSON de referencia emparejado por nombre. No se debe usar la misma imagen o una copia casi idéntica simultáneamente para entrenamiento y prueba.
-
-Se mantendrán separados:
-- **Entrenamiento:** imágenes etiquetadas con las que se ajustará el clasificador.
-- **Validación:** imágenes distintas para comparar configuraciones y modelos.
-- **Prueba final:** imágenes que no se utilizarán durante el entrenamiento ni los ajustes.
-
-No se fija todavía una cantidad final de fotografías: primero construiremos el flujo de recorte y etiquetado, y luego estimaremos el volumen necesario para las ocho clases.
+La división de entrenamiento, validación y prueba se hará por captura/configuración: no mezclar recortes de una misma fotografía entre conjuntos. Quince capturas producen hasta 480 recortes, pero no equivalen a 480 fotografías independientes. Después se revisará la cobertura por clase y se decidirá si hacen falta más capturas.
 
 ## Siguiente etapa
 
-Después de recoger varias fotografías, se desarrollará el flujo para:
-1. Rectificar cada foto.
-2. Recortar las 32 posiciones.
-3. Asociar cada recorte con la clase indicada por su JSON.
-4. Construir un dataset de las ocho clases.
-5. Entrenar y evaluar un clasificador de Machine Learning con imágenes separadas por captura.
-
-
-## Preparar los recortes etiquetados de varias fotografías
-
-Después de guardar los originales y sus JSON correspondientes, ejecuta una sola vez:
-
-~~~bash
-python preparar_dataset.py
-~~~
-
-El programa:
-1. Busca todas las fotografías de images/raw/.
-2. Busca el JSON del mismo nombre base en labels/.
-3. Abre el selector de esquinas **una vez por fotografía**. Se deben seleccionar las cuatro esquinas exteriores de la cuadrícula 4×8 y pulsar Enter.
-4. Rectifica la foto y guarda una copia en images/rectified/.
-5. Extrae automáticamente las 32 regiones de producto, sin incluir los nombres ni los precios que aparecen debajo.
-6. Utiliza el JSON para etiquetar cada recorte y guardarlo en images/crops/{clase}/.
-7. Registra todos los recortes en manifests/recortes.csv.
-
-Ejemplo de salida:
-
-~~~text
-images/crops/
-├── water/
-├── milk/
-├── soda/
-├── juice/
-├── cookies/
-├── cereal/
-├── canned/
-├── detergent/
-└── empty/
-~~~
-
-Cada imagen recortada recibe un nombre que conserva la captura y la posición, por ejemplo \`captura_001_slot_03.png\`.
-
-### Comportamiento del lote
-
-- **No se ejecuta el script 15 veces:** una sola ejecución recorre todas las fotos que encuentre.
-- **Sí se marcan cuatro esquinas por fotografía** en esta versión. Como cada captura puede variar en perspectiva, todavía no hacemos una detección automática de esquinas.
-- Pulsa Esc en la ventana de selección para cancelar el lote.
-- Si vuelves a ejecutar el proceso, los recortes se generan de nuevo. Usa \`--sobrescribir\` cuando quieras forzar la sustitución de archivos existentes.
-
-Opciones de rutas:
-
-~~~bash
-python preparar_dataset.py --help
-~~~
-
-El manifiesto es una tabla de trazabilidad: permite saber de qué fotografía y posición procede cada recorte y cuál es su etiqueta. No es todavía un conjunto de entrenamiento dividido.
-
-### Mínimo de fotografías para la actividad
-
-Cada grupo reunirá **al menos 15 fotografías completas del anaquel**, cada una con su JSON asociado:
-- 5 distribuciones/configuraciones diferentes.
-- 3 capturas por configuración, variando moderadamente el ángulo, la distancia o las condiciones de luz.
-
-Si varias fotos corresponden exactamente a la misma distribución, se debe copiar el mismo JSON y renombrarlo para que coincida con cada fotografía. No asociar una etiqueta a una distribución distinta.
-
-Quince capturas de 32 posiciones producen hasta 480 recortes; la cantidad de recortes ocupados depende de las distribuciones usadas. Los recortes de una misma captura están relacionados, por lo que la separación entre entrenamiento, validación y prueba se hará por fotografía/captura, nunca mezclando al azar recortes de una misma captura entre conjuntos.
+Después de validar y revisar los recortes, desarrollaremos el entrenamiento de un clasificador clásico (HOG + SVM) y evaluaremos sus resultados con capturas separadas.
