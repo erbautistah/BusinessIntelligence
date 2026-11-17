@@ -86,6 +86,23 @@ Varía de manera controlada:
 
 Asegúrate de que la cuadrícula completa siga visible y que sus cuatro esquinas puedan identificarse.
 
+## Fotografías con interferencias controladas
+
+Además de capturas limpias, conviene reservar al menos tres de las 15 fotografías para variaciones moderadas que permitan evaluar la robustez:
+- Cursor visible sobre el anaquel.
+- Una mano u objeto que tape parcialmente una ilustración.
+- Reflejo o brillo desigual de la pantalla.
+- Ángulo ligeramente más oblicuo o enfoque menos perfecto, siempre que la cuadrícula siga siendo identificable.
+
+No hace falta que todas las fotos tengan interferencias. La mayoría debe conservar una imagen clara para tener ejemplos de referencia.
+
+La etiqueta describe el contenido real de la posición, no el artefacto:
+- Si la posición está vacía y aparece el cursor, sigue siendo \`empty\`.
+- Si hay un producto parcialmente oculto, la etiqueta sigue siendo el producto real, pero se debe registrar esa condición para revisar si el recorte todavía es útil.
+- Si no se puede saber con seguridad qué producto hay, no se debe inventar una etiqueta: se descarta esa muestra o se marca para revisión.
+
+Las fotografías del anaquel virtual ayudan a estudiar perspectiva, reflejos, cursor y oclusiones simuladas. No equivalen por sí solas a un dataset de anaqueles físicos con polvo, insectos, etiquetas rotas y empaques reales; esas condiciones requerirían capturas de escenarios físicos.
+
 ## Qué no hacer
 
 - No editar las fotografías originales.
