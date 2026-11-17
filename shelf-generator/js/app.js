@@ -51,6 +51,7 @@ const elements = {
   scenarioSelect: document.getElementById('scenarioSelect'),
   scenarioButton: document.getElementById('scenarioButton'),
   presentation: document.getElementById('presentationButton'),
+  captureExit: document.getElementById('captureExitButton'),
   slotNumber: document.getElementById('selectedSlotNumber'),
   slotText: document.getElementById('selectedSlotText'),
   occupied: document.getElementById('occupiedCount'),
@@ -521,6 +522,7 @@ elements.random.addEventListener('click', randomDistribution);
 elements.clear.addEventListener('click', clearShelf);
 elements.scenarioButton.addEventListener('click', () => applyScenario(elements.scenarioSelect.value));
 elements.presentation.addEventListener('click', toggleCaptureMode);
+elements.captureExit.addEventListener('click', toggleCaptureMode);
 elements.png.addEventListener('click', exportPng);
 elements.json.addEventListener('click', exportJson);
 elements.csv.addEventListener('click', exportCsv);
