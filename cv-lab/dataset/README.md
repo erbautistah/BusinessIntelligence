@@ -6,10 +6,23 @@ Esta carpeta organiza las fotografías Android y las etiquetas de referencia par
 
 - images/raw/: fotografías originales tomadas con Android. No modificar ni sobrescribir.
 - images/rectified/: resultados rectificados por OpenCV.
-- images/crops/: recortes generados de cada posición del anaquel.
+- images/crops/: recortes generados automáticamente para cada posición.
 - labels/: JSON de referencia exportado por el generador.
+- manifests/: CSV que registra cada recorte, su captura de origen y su etiqueta.
 
 Las subcarpetas de imágenes se mantienen localmente y están excluidas del control de versiones por tamaño. Los archivos .gitkeep conservan la estructura al clonar el repositorio.
+
+## Mínimo acordado para la actividad
+
+Cada grupo preparará **al menos 15 fotografías completas**, cada una con su JSON correspondiente.
+
+Organización recomendada:
+- 5 distribuciones distintas del anaquel.
+- 3 fotografías por distribución, cambiando moderadamente ángulo, distancia o condiciones de iluminación.
+
+Se parte de los cuatro escenarios del generador y se prepara una quinta distribución personalizada. Si las tres fotos corresponden a la misma distribución, se duplica el JSON de referencia con el nombre base de cada fotografía.
+
+Quince fotografías producen hasta 480 recortes (32 posiciones por captura). El número de recortes de producto depende de cuántos espacios estén ocupados. Los recortes procedentes de una misma captura no se deben repartir entre entrenamiento y prueba.
 
 ## Cómo registrar una captura
 
@@ -27,40 +40,62 @@ images/raw/captura_001.jpg
 labels/captura_001.json
 ~~~
 
-Si tomas tres fotografías de la misma distribución, conserva tres pares:
+## Preparación automática de recortes
 
-~~~text
-images/raw/captura_001.jpg
-images/raw/captura_002.jpg
-images/raw/captura_003.jpg
-labels/captura_001.json
-labels/captura_002.json
-labels/captura_003.json
+Desde cv-lab/, con el entorno virtual activo:
+
+~~~bash
+python preparar_dataset.py
 ~~~
 
-Puedes copiar el JSON original y renombrar la copia para cada fotografía que represente exactamente la misma distribución.
+El programa recorre las fotos de images/raw/. Para cada foto:
+1. solicita seleccionar cuatro esquinas de la cuadrícula;
+2. rectifica la perspectiva;
+3. recorta automáticamente las 32 posiciones;
+4. lee el JSON de igual nombre;
+5. guarda cada recorte en la carpeta de su clase o en empty/;
+6. registra el resultado en manifests/recortes.csv.
+
+Se marcan las esquinas una vez por foto. No es necesario ejecutar el programa por separado para cada imagen.
+
+## Estructura de los recortes
+
+~~~text
+images/crops/
+├── water/
+├── milk/
+├── soda/
+├── juice/
+├── cookies/
+├── cereal/
+├── canned/
+├── detergent/
+└── empty/
+~~~
+
+Cada recorte conserva el nombre de captura y posición, por ejemplo captura_001_slot_03.png. La carpeta empty/ contiene posiciones sin producto; no es una categoría de producto.
 
 ## Variaciones de captura
 
-Para obtener datos útiles, no tomes únicamente tres fotos idénticas desde el mismo lugar. Varía de manera controlada:
-- Distribución y posiciones de productos.
-- Distancia al monitor.
-- Ángulo horizontal o vertical moderado.
-- Brillo de pantalla y luz ambiental.
-- Dispositivo Android, si hay más de uno disponible.
+Varía de manera controlada:
+- distribución y posiciones de productos;
+- distancia al monitor;
+- ángulo horizontal o vertical moderado;
+- brillo de pantalla y luz ambiental;
+- dispositivo Android, si hay más de uno disponible.
 
-Asegúrate de que la cuadrícula completa siga siendo visible y que los cuatro bordes puedan identificarse.
+Asegúrate de que la cuadrícula completa siga visible y que sus cuatro esquinas puedan identificarse.
 
 ## Qué no hacer
 
 - No editar las fotografías originales.
 - No aplicar filtros ni compresión adicional.
 - No asociar un JSON si no corresponde exactamente a la distribución fotografiada.
-- No mezclar fotos casi idénticas entre entrenamiento y prueba.
-- No asumir que una foto con errores de desenfoque o encuadre debe usarse para entrenar sin revisar su etiqueta y utilidad.
+- No mezclar capturas casi idénticas entre entrenamiento y prueba.
+- No asumir que una foto desenfocada o incompleta debe usarse para entrenar sin revisar su utilidad y etiqueta.
 
 ## Privacidad y Git
 
 Las fotos originales, rectificadas y los recortes no se suben automáticamente a GitHub. Permanecen en la laptop del grupo. No fotografíes personas ni información personal.
 
-Las etiquetas JSON pueden compartirse si el equipo docente lo solicita. La carpeta no debe contener datos personales.
+Las etiquetas JSON y el manifiesto CSV contienen metadatos de las posiciones, no datos personales. La carpeta no debe contener datos personales.
