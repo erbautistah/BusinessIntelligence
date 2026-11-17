@@ -9,7 +9,7 @@ Cada clase dispone de 3 horas: 90 minutos de teoría y 90 minutos de laboratorio
 ## Restricciones conocidas
 
 - Las PC del laboratorio tienen Windows y Deep Freeze; los cambios locales no persisten al reiniciar.
-- Al menos una persona por grupo dispone de una laptop con Windows, Python y Git instalados. Ese equipo será el espacio persistente del grupo.
+- Al menos una persona por grupo dispone de una laptop con Windows, Python y Git instalado. Ese equipo será el espacio persistente del grupo.
 - Los celulares utilizados para la captura serán Android.
 - La red Wi-Fi académica de los celulares se considera aislada de la red cableada de las PC del laboratorio.
 - No se diseñará transferencia directa celular–PC entre esas redes.
@@ -22,50 +22,60 @@ Cada clase dispone de 3 horas: 90 minutos de teoría y 90 minutos de laboratorio
 ### Alcance acordado
 
 - Aplicación web 2D sencilla que muestra un único anaquel.
-- Distribución de 4 filas por 8 columnas (32 espacios).
+- Distribución de 4 filas por 8 columnas (32 posiciones).
 - Catálogo inicial de ocho productos ilustrados mediante recursos SVG locales.
-- Seleccionar un espacio y asignar, reemplazar o retirar el producto.
-- Generar una distribución aleatoria o vaciar el anaquel.
-- Mostrar un resumen de espacios ocupados y vacíos por categoría.
-- Activar un modo de captura que oculta los controles para fotografiar el anaquel desde Android.
+- Seleccionar una posición y asignar, reemplazar o retirar el producto.
+- Escenarios controlados: equilibrado, faltantes, completo y predominio de bebidas.
+- Generación aleatoria adicional y opción de vaciar el anaquel.
+- Resumen: posiciones ocupadas, vacías, variedad de productos, ocupación y valor referencial de exhibición.
+- Modo captura que oculta los controles para fotografiar desde Android.
+- Exportación PNG de referencia, JSON con metadatos del escenario y CSV con una fila por posición.
 - Sin backend, base de datos, frameworks ni dependencias externas.
 
 ### Implementación disponible
 
 Ubicación: `shelf-generator/`.
 
-Para ejecutarlo en Windows:
-1. Abrir PowerShell en la carpeta `shelf-generator`.
+En Windows:
+1. Abrir PowerShell en `shelf-generator`.
 2. Ejecutar `python -m http.server 8000`.
-3. Abrir `http://localhost:8000` en el navegador.
+3. Abrir `http://localhost:8000`.
 
-Se utiliza un servidor HTTP local porque algunos navegadores restringen la carga de SVG externos al abrir el HTML directamente mediante `file://`.
+### Semántica de los datos
+
+- Cada celda representa una posición de exhibición (*facing*).
+- Un espacio ocupado se cuenta como un producto visible para el cálculo referencial.
+- El valor referencial suma el precio unitario ilustrativo por cada espacio ocupado.
+- Esto **no equivale al inventario real ni al stock total de almacén**.
+- Los archivos JSON y CSV son los datos de referencia para comparar las futuras detecciones visuales (*ground truth*).
 
 ### Límites del prototipo
 
-- El resumen cuenta espacios de exhibición, no inventario real ni unidades físicas en bodega.
-- Los precios son ilustrativos.
-- Todavía no incluye promociones ni reglas comerciales.
-- Todavía no incorpora OpenCV, reconocimiento de productos ni modelos de ML.
-- La aplicación no guarda escenarios entre sesiones; la persistencia se definirá si resulta necesaria.
-- El modo captura prepara la visualización, pero no toma ni transfiere fotografías.
+- Las ilustraciones son representaciones controladas, no empaques reales.
+- El catálogo contiene ocho clases conocidas. El prototipo no reconoce productos arbitrarios.
+- No se ha incorporado OpenCV ni un modelo de ML.
+- Los escenarios no se guardan automáticamente; exportar JSON/CSV para conservarlos.
+- El modo captura solo oculta controles; la foto se toma en Android.
+- La transferencia Android → almacenamiento compartido → laptop continúa pendiente de prueba.
 
 ## Separación entre práctica y evaluación
 
-La intención es reutilizar la arquitectura del generador, pero diferenciar el catálogo y los requerimientos del laboratorio y del examen práctico.
+La intención es reutilizar la arquitectura del generador, pero diferenciar el catálogo y los requerimientos del laboratorio y del examen práctico. El generador permite crear escenarios de supermercado de práctica; la evaluación podrá utilizar un catálogo diferente, siempre que el método de visión y las clases se preparen y validen antes.
 
-No se debe asumir que un modelo de visión reconocerá automáticamente productos nuevos. El método de reconocimiento, las clases y los datos de entrenamiento/prueba deberán definirse y probarse antes del laboratorio.
+No se debe asumir que un modelo de visión reconocerá automáticamente productos nuevos.
 
 ## Pendientes técnicos y didácticos
 
-1. Probar la legibilidad del anaquel al fotografiar una pantalla con distintos celulares Android.
-2. Definir el proceso de transferencia de las fotografías mediante un almacenamiento compartido accesible desde el Wi-Fi académico y la red cableada.
-3. Evaluar distorsión de perspectiva, reflejos, resolución y patrones de pantalla.
-4. Elegir un método de visión por computadora realista para 90 minutos y comprobarlo con las fotografías.
-5. Definir los datos de entrenamiento/prueba y las clases de productos.
-6. Decidir cómo ML utilizará los resultados visuales para producir una clasificación o predicción empresarial.
-7. Diseñar los componentes de PLN y sistemas conversacionales para que consuman datos del mismo caso de negocio.
+1. Probar el generador en Windows y navegadores disponibles.
+2. Verificar que PNG, JSON y CSV se descarguen correctamente y que los conteos coincidan.
+3. Probar la legibilidad del anaquel al fotografiar una pantalla con distintos celulares Android.
+4. Definir el proceso de transferencia de fotografías mediante almacenamiento compartido accesible desde ambas redes.
+5. Evaluar distorsión de perspectiva, reflejos, resolución y patrones de pantalla.
+6. Elegir un método de visión por computadora realista para 90 minutos y comprobarlo con las fotografías.
+7. Definir las clases y datos de entrenamiento/prueba. El JSON/CSV del escenario permitirá contrastar la detección.
+8. Decidir cómo ML utilizará los resultados visuales para producir una clasificación o predicción empresarial.
+9. Diseñar PLN y sistemas conversacionales para consumir datos del mismo caso.
 
 ## Principio de desarrollo
 
-Construir en incrementos pequeños y verificables. El generador debe probarse primero con dispositivos reales; después se integrarán visión por computadora, ML, PLN y sistemas conversacionales.
+Construir en incrementos pequeños y verificables. Primero validar el generador y sus exportaciones con dispositivos reales; después integrar visión por computadora, ML, PLN y sistemas conversacionales.
