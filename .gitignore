@@ -21,3 +21,11 @@ data/private/
 # OpenCV outputs and local photo tests
 cv-lab/salida_cv/
 cv-lab/imagenes_prueba/
+
+# Dataset local: fotografias originales y resultados derivados (no subir al repo)
+cv-lab/dataset/images/raw/*
+!cv-lab/dataset/images/raw/.gitkeep
+cv-lab/dataset/images/rectified/*
+!cv-lab/dataset/images/rectified/.gitkeep
+cv-lab/dataset/images/crops/*
+!cv-lab/dataset/images/crops/.gitkeep
