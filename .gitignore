@@ -18,11 +18,12 @@ venv/
 data/raw/
 data/private/
 
-# OpenCV outputs and local photo tests
+# OpenCV y resultados locales
 cv-lab/salida_cv/
+cv-lab/salida_ml/
 cv-lab/imagenes_prueba/
 
-# Dataset local: fotografias originales y resultados derivados (no subir al repo)
+# Dataset local: fotografías y resultados derivados (no subir al repositorio)
 cv-lab/dataset/images/raw/*
 !cv-lab/dataset/images/raw/.gitkeep
 cv-lab/dataset/images/rectified/*
