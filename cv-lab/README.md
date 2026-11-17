@@ -162,3 +162,63 @@ Después de recoger varias fotografías, se desarrollará el flujo para:
 3. Asociar cada recorte con la clase indicada por su JSON.
 4. Construir un dataset de las ocho clases.
 5. Entrenar y evaluar un clasificador de Machine Learning con imágenes separadas por captura.
+
+
+## Preparar los recortes etiquetados de varias fotografías
+
+Después de guardar los originales y sus JSON correspondientes, ejecuta una sola vez:
+
+~~~bash
+python preparar_dataset.py
+~~~
+
+El programa:
+1. Busca todas las fotografías de images/raw/.
+2. Busca el JSON del mismo nombre base en labels/.
+3. Abre el selector de esquinas **una vez por fotografía**. Se deben seleccionar las cuatro esquinas exteriores de la cuadrícula 4×8 y pulsar Enter.
+4. Rectifica la foto y guarda una copia en images/rectified/.
+5. Extrae automáticamente las 32 regiones de producto, sin incluir los nombres ni los precios que aparecen debajo.
+6. Utiliza el JSON para etiquetar cada recorte y guardarlo en images/crops/{clase}/.
+7. Registra todos los recortes en manifests/recortes.csv.
+
+Ejemplo de salida:
+
+~~~text
+images/crops/
+├── water/
+├── milk/
+├── soda/
+├── juice/
+├── cookies/
+├── cereal/
+├── canned/
+├── detergent/
+└── empty/
+~~~
+
+Cada imagen recortada recibe un nombre que conserva la captura y la posición, por ejemplo \`captura_001_slot_03.png\`.
+
+### Comportamiento del lote
+
+- **No se ejecuta el script 15 veces:** una sola ejecución recorre todas las fotos que encuentre.
+- **Sí se marcan cuatro esquinas por fotografía** en esta versión. Como cada captura puede variar en perspectiva, todavía no hacemos una detección automática de esquinas.
+- Pulsa Esc en la ventana de selección para cancelar el lote.
+- Si vuelves a ejecutar el proceso, los recortes se generan de nuevo. Usa \`--sobrescribir\` cuando quieras forzar la sustitución de archivos existentes.
+
+Opciones de rutas:
+
+~~~bash
+python preparar_dataset.py --help
+~~~
+
+El manifiesto es una tabla de trazabilidad: permite saber de qué fotografía y posición procede cada recorte y cuál es su etiqueta. No es todavía un conjunto de entrenamiento dividido.
+
+### Mínimo de fotografías para la actividad
+
+Cada grupo reunirá **al menos 15 fotografías completas del anaquel**, cada una con su JSON asociado:
+- 5 distribuciones/configuraciones diferentes.
+- 3 capturas por configuración, variando moderadamente el ángulo, la distancia o las condiciones de luz.
+
+Si varias fotos corresponden exactamente a la misma distribución, se debe copiar el mismo JSON y renombrarlo para que coincida con cada fotografía. No asociar una etiqueta a una distribución distinta.
+
+Quince capturas de 32 posiciones producen hasta 480 recortes; la cantidad de recortes ocupados depende de las distribuciones usadas. Los recortes de una misma captura están relacionados, por lo que la separación entre entrenamiento, validación y prueba se hará por fotografía/captura, nunca mezclando al azar recortes de una misma captura entre conjuntos.
