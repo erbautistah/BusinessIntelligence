@@ -80,6 +80,35 @@ Un script independiente compara el CSV con el JSON de referencia exportado por e
 - Los umbrales deben evaluarse con otras fotografías y dispositivos.
 - La coincidencia con una única fotografía no demuestra generalización.
 
+## Organización del dataset y situación del aprendizaje
+
+Ubicación: cv-lab/dataset/.
+
+Estructura:
+- images/raw/: originales Android.
+- images/rectified/: imágenes corregidas por perspectiva.
+- images/crops/: recortes de las 32 posiciones.
+- labels/: JSON de referencia emparejados por fotografía.
+
+Las fotos originales y las imágenes procesadas se mantienen localmente y se excluyen de Git para evitar repositorios pesados. Cada foto se empareja con su JSON mediante un nombre base común.
+
+### Diferencia entre la primera regla y el futuro modelo ML
+
+La versión actual de analizar_anaquel.py no aprende de imágenes. Detecta ocupado/vacío usando umbrales HSV configurables:
+- saturación mínima: 65;
+- brillo mínimo: 45;
+- proporción mínima de píxeles de color: 0.08.
+
+Los estudiantes pueden modificar esos parámetros y comparar resultados. Eso es ajuste de reglas, no entrenamiento ML.
+
+Las fotografías múltiples se recopilarán para:
+1. probar la robustez de la detección ante cambios de dispositivo, distancia, ángulo y luz;
+2. rectificar y recortar posiciones;
+3. asociar cada recorte con la clase del JSON;
+4. formar conjuntos separados de entrenamiento, validación y prueba para clasificar los ocho productos.
+
+Todavía no se ha implementado el recorte etiquetado ni el entrenamiento del clasificador.
+
 ## Separación entre práctica y evaluación
 
 La intención es reutilizar la arquitectura del generador, pero diferenciar el catálogo y los requerimientos del laboratorio y del examen práctico. El generador permite crear escenarios de supermercado de práctica; la evaluación podrá utilizar un catálogo diferente, siempre que el método de visión y las clases se preparen y validen antes.
