@@ -20,8 +20,6 @@ import cv2
 
 from analizar_anaquel import (
     COLUMNS,
-    ICON_X_RANGE,
-    ICON_Y_RANGE,
     ROWS,
     CELL_HEIGHT,
     CELL_WIDTH,
@@ -32,6 +30,11 @@ from analizar_anaquel import (
 )
 
 SUPPORTED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
+
+# Keep the full illustration while excluding the slot number, product name and price.
+CROP_X_RANGE = (0.15, 0.85)
+CROP_Y_RANGE = (0.08, 0.73)
+
 
 
 def load_labels(json_path: Path) -> tuple[dict[int, dict[str, Any]], dict[str, str]]:
@@ -81,10 +84,10 @@ def crop_slot(rectified, slot_number: int):
     x0 = column * CELL_WIDTH
     y0 = row * CELL_HEIGHT
 
-    left = x0 + int(CELL_WIDTH * ICON_X_RANGE[0])
-    right = x0 + int(CELL_WIDTH * ICON_X_RANGE[1])
-    top = y0 + int(CELL_HEIGHT * ICON_Y_RANGE[0])
-    bottom = y0 + int(CELL_HEIGHT * ICON_Y_RANGE[1])
+    left = x0 + int(CELL_WIDTH * CROP_X_RANGE[0])
+    right = x0 + int(CELL_WIDTH * CROP_X_RANGE[1])
+    top = y0 + int(CELL_HEIGHT * CROP_Y_RANGE[0])
+    bottom = y0 + int(CELL_HEIGHT * CROP_Y_RANGE[1])
 
     crop = rectified[top:bottom, left:right]
     if crop.size == 0:
