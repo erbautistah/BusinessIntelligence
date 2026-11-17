@@ -17,3 +17,7 @@ venv/
 # Datos de trabajo (no subir imágenes de estudiantes ni datos privados)
 data/raw/
 data/private/
+
+# OpenCV outputs and local photo tests
+cv-lab/salida_cv/
+cv-lab/imagenes_prueba/
