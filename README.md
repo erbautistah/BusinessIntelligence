@@ -19,6 +19,10 @@ El proyecto incluye:
 
 Instrucciones: [cv-lab/README.md](cv-lab/README.md).
 
+### Guía de laboratorio
+
+[Integración de Machine Learning y visión por computadora](labs/GUIA_PRACTICA_INTEGRACION_ML_VISION_ANAQUEL.md).
+
 **Límite actual:** el clasificador se entrena con ocho ilustraciones de productos y una clase empty. Esta primera línea base no demuestra que pueda reconocer empaques comerciales reales.
 
 ## Estructura
