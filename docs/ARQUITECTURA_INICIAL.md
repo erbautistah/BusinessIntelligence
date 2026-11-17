@@ -58,6 +58,28 @@ En Windows:
 - El modo captura solo oculta controles; la foto se toma en Android.
 - La transferencia Android → almacenamiento compartido → laptop continúa pendiente de prueba.
 
+## Visión por computadora: primera etapa implementada
+
+Ubicación: cv-lab/.
+
+La primera implementación recibe únicamente la fotografía Android como entrada del análisis. El usuario selecciona las cuatro esquinas de la cuadrícula 4×8; OpenCV aplica una transformación de perspectiva, divide la imagen en 32 posiciones y detecta si cada una está ocupada o vacía mediante un umbral de saturación en HSV.
+
+Archivos generados:
+- Imagen del anaquel rectificado.
+- Imagen anotada con detecciones ocupado/vacío.
+- CSV con una fila por posición.
+- JSON con parámetros y resultados.
+
+Un script independiente compara el CSV con el JSON de referencia exportado por el generador. Ese JSON **no interviene en la detección**, solo en la evaluación posterior.
+
+### Alcance y limitaciones actuales
+
+- La detección se basa en las ilustraciones de color y en la geometría del generador actual.
+- No identifica aún las ocho clases de productos.
+- No es un modelo de ML ni un detector genérico.
+- Los umbrales deben evaluarse con otras fotografías y dispositivos.
+- La coincidencia con una única fotografía no demuestra generalización.
+
 ## Separación entre práctica y evaluación
 
 La intención es reutilizar la arquitectura del generador, pero diferenciar el catálogo y los requerimientos del laboratorio y del examen práctico. El generador permite crear escenarios de supermercado de práctica; la evaluación podrá utilizar un catálogo diferente, siempre que el método de visión y las clases se preparen y validen antes.
