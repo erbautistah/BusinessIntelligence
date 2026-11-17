@@ -113,7 +113,7 @@ Todavía no se ha implementado el recorte etiquetado ni el entrenamiento del cla
 
 Se acordó un mínimo de **15 fotografías completas por grupo**, tomadas con Android, acompañadas de un JSON de referencia por captura.
 
-Plan aplicado: 15 fotografías completas de 15 distribuciones diferentes. Se inicia con los cuatro escenarios predefinidos; se añaden cinco distribuciones personalizadas, tres de baja ocupación o productos concentrados y tres distribuciones con interferencias visuales moderadas. La distancia, perspectiva y condiciones de luz también variarán moderadamente. Cada fotografía tendrá su JSON propio, correspondiente exactamente a esa distribución.
+Plan aplicado y detallado en cv-lab/dataset/README.md: 15 fotografías completas de 15 distribuciones diferentes. Capturas 001–004: cuatro escenarios predefinidos; 005–009: cinco distribuciones personalizadas; 010–012: baja ocupación/productos concentrados; 013–015: distribuciones con interferencias visuales moderadas. Cada captura requiere un JPG Android y su propio JSON, ambos con el mismo nombre base y correspondientes exactamente a la misma distribución. El PNG del generador es opcional y no se procesa.
 
 Se incorporó \`cv-lab/preparar_dataset.py\`. En una sola ejecución:
 1. recorre todas las fotografías de \`dataset/images/raw/\`;
