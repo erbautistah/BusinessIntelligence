@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#163b32">
+  <meta name="description" content="Generador didáctico de anaqueles 2D para Inteligencia de Negocios.">
+  <title>Generador de anaqueles | Tienda inteligente</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand-lockup">
+      <div class="brand-mark" aria-hidden="true">TI</div>
+      <div><p class="eyebrow">INTELIGENCIA DE NEGOCIOS · UNIDAD 4</p><h1>Tienda inteligente</h1></div>
+    </div>
+    <div class="topbar-actions">
+      <span class="status-chip"><span class="status-dot"></span> Simulador local</span>
+      <button class="button button-quiet" id="presentationButton" type="button" title="Ocultar controles para fotografiar el anaquel">▣ Modo captura</button>
+    </div>
+  </header>
+  <main class="workspace">
+    <section class="intro-row">
+      <div><p class="eyebrow">GENERADOR DE ESCENARIOS</p><h2>Anaquel de supermercado</h2><p class="intro-copy">Organiza productos, modifica la exhibición y prepara una imagen para el laboratorio de visión por computadora.</p></div>
+      <div class="shelf-meta" aria-label="Dimensiones del anaquel"><span class="meta-number">4 × 8</span><span class="meta-label">32 espacios</span></div>
+    </section>
+    <div class="main-grid">
+      <section class="shelf-panel" aria-labelledby="shelfHeading">
+        <div class="panel-heading"><div><p class="eyebrow">ZONA DE EXHIBICIÓN</p><h3 id="shelfHeading">Mercado Demo</h3></div><div class="shelf-state" id="shelfState">Escenario inicial</div></div>
+        <div class="shelf-frame" id="shelfFrame">
+          <div class="shelf-sign"><div class="store-logo" aria-hidden="true">M</div><div><strong>MERCADO DEMO</strong><span>Calidad y variedad para todos</span></div><div class="sign-right">EXHIBICIÓN<br><b>U4</b></div></div>
+          <div class="shelf-grid" id="shelfGrid" aria-label="Anaquel de cuatro filas y ocho columnas"></div>
+          <div class="shelf-base"><span>EXHIBICIÓN DE PRODUCTOS</span><span>SIMULACIÓN ACADÉMICA</span></div>
+        </div>
+        <p class="shelf-hint" id="shelfHint">Selecciona un espacio para asignar o retirar un producto.</p>
+      </section>
+      <aside class="control-panel" id="controlPanel">
+        <div class="panel-heading panel-heading-stack"><div><p class="eyebrow">CONFIGURACIÓN</p><h3>Editar anaquel</h3></div></div>
+        <section class="editor-card" aria-labelledby="editorTitle">
+          <div class="editor-title-row"><h4 id="editorTitle">Espacio seleccionado</h4><span class="slot-number" id="selectedSlotNumber">—</span></div>
+          <p class="muted-copy" id="selectedSlotText">Selecciona cualquiera de los 32 espacios del anaquel.</p>
+          <label for="productSelect">Producto</label>
+          <select id="productSelect" disabled><option value="">Selecciona un espacio primero</option></select>
+          <div class="editor-actions"><button class="button button-primary" id="applyButton" type="button" disabled>Aplicar</button><button class="button button-outline" id="emptyButton" type="button" disabled>Vaciar</button></div>
+        </section>
+        <section class="actions-card" aria-labelledby="scenarioTitle">
+          <h4 id="scenarioTitle">Escenarios</h4>
+          <button class="button button-secondary button-full" id="randomButton" type="button">↻ Generar distribución</button>
+          <button class="button button-outline button-full" id="clearButton" type="button">Vaciar anaquel</button>
+          <p class="small-note">La distribución aleatoria es un ejercicio visual; no representa datos reales de ventas.</p>
+        </section>
+        <section class="summary-card" aria-labelledby="summaryTitle">
+          <h4 id="summaryTitle">Resumen de exhibición</h4>
+          <div class="summary-metrics"><div><strong id="occupiedCount">0</strong><span>Espacios ocupados</span></div><div><strong id="emptyCount">32</strong><span>Espacios vacíos</span></div></div>
+          <div class="summary-list" id="summaryList"></div>
+          <p class="small-note">El conteo corresponde a espacios con productos visibles, no al stock real almacenado en la tienda.</p>
+        </section>
+      </aside>
+    </div>
+  </main>
+  <footer class="footer" id="footer"><span>Proyecto académico · Tienda inteligente</span><span>Todos los recursos se ejecutan localmente</span></footer>
+  <script src="js/app.js" defer></script>
+</body>
+</html>
