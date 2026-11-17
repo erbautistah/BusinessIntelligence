@@ -28,7 +28,7 @@ Desde PowerShell, en la raíz del repositorio:
 ~~~powershell
 cd cv-lab
 py -m venv .venv
-.\\.venv\\Scripts\\Activate.ps1
+.\.venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 pip install -r requirements.txt
 ~~~
@@ -36,7 +36,7 @@ pip install -r requirements.txt
 Si PowerShell bloquea la activación del entorno virtual, se puede ejecutar el intérprete del entorno directamente:
 
 ~~~powershell
-.\\.venv\\Scripts\\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
 ~~~
 
 ## Ejecutar el análisis
@@ -44,7 +44,7 @@ Si PowerShell bloquea la activación del entorno virtual, se puede ejecutar el i
 Con el entorno virtual activado y estando dentro de cv-lab:
 
 ~~~powershell
-python analizar_anaquel.py "C:\\ruta\\a\\foto-android.jpg"
+python analizar_anaquel.py "C:\ruta\a\foto-android.jpg"
 ~~~
 
 Se abrirá una ventana para seleccionar cuatro puntos. Haz clic en las esquinas exteriores de la cuadrícula de posiciones, no en los bordes del monitor:
@@ -74,7 +74,7 @@ El PNG y el JSON exportados por el generador **no entran en el algoritmo de dete
 Ejemplo:
 
 ~~~powershell
-python comparar_referencia.py --detecciones salida_cv/detecciones.csv --referencia "C:\\ruta\\anaquel-equilibrado.json"
+python comparar_referencia.py --detecciones salida_cv/detecciones.csv --referencia "C:\ruta\anaquel-equilibrado.json"
 ~~~
 
 El comparador produce salida_cv/validacion.json y calcula exactitud, precisión, recall y F1 para la tarea binaria ocupado/vacío. Estas métricas no evalúan la clasificación de los ocho productos.
