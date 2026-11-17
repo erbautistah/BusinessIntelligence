@@ -19,36 +19,53 @@ Cada clase dispone de 3 horas: 90 minutos de teoría y 90 minutos de laboratorio
 
 ## Primer componente: generador de anaqueles
 
-Se propone una aplicación web 2D sencilla, ejecutable localmente, que muestre un único anaquel.
+### Alcance acordado
 
-Dimensión inicial propuesta: 4 filas por 8 columnas (32 espacios). Es una propuesta de diseño, no una decisión técnica validada todavía.
+- Aplicación web 2D sencilla que muestra un único anaquel.
+- Distribución de 4 filas por 8 columnas (32 espacios).
+- Catálogo inicial de ocho productos ilustrados mediante recursos SVG locales.
+- Seleccionar un espacio y asignar, reemplazar o retirar el producto.
+- Generar una distribución aleatoria o vaciar el anaquel.
+- Mostrar un resumen de espacios ocupados y vacíos por categoría.
+- Activar un modo de captura que oculta los controles para fotografiar el anaquel desde Android.
+- Sin backend, base de datos, frameworks ni dependencias externas.
 
-Funciones candidatas:
-- Mostrar productos en celdas del anaquel.
-- Cambiar, agregar o retirar productos.
-- Mostrar información comercial asociada a cada producto.
-- Configurar precios y promociones cuando se defina el modelo de datos.
-- Generar una imagen PNG del anaquel para usarla como entrada en el laboratorio.
+### Implementación disponible
 
-Se evitará ampliar el alcance a una tienda completa, navegación 3D, inventario transaccional o backend innecesario.
+Ubicación: `shelf-generator/`.
+
+Para ejecutarlo en Windows:
+1. Abrir PowerShell en la carpeta `shelf-generator`.
+2. Ejecutar `python -m http.server 8000`.
+3. Abrir `http://localhost:8000` en el navegador.
+
+Se utiliza un servidor HTTP local porque algunos navegadores restringen la carga de SVG externos al abrir el HTML directamente mediante `file://`.
+
+### Límites del prototipo
+
+- El resumen cuenta espacios de exhibición, no inventario real ni unidades físicas en bodega.
+- Los precios son ilustrativos.
+- Todavía no incluye promociones ni reglas comerciales.
+- Todavía no incorpora OpenCV, reconocimiento de productos ni modelos de ML.
+- La aplicación no guarda escenarios entre sesiones; la persistencia se definirá si resulta necesaria.
+- El modo captura prepara la visualización, pero no toma ni transfiere fotografías.
 
 ## Separación entre práctica y evaluación
 
-La intención es reutilizar el generador, pero diferenciar:
-- Catálogo y escenario didáctico de los laboratorios.
-- Catálogo y reglas comerciales del examen práctico.
+La intención es reutilizar la arquitectura del generador, pero diferenciar el catálogo y los requerimientos del laboratorio y del examen práctico.
 
 No se debe asumir que un modelo de visión reconocerá automáticamente productos nuevos. El método de reconocimiento, las clases y los datos de entrenamiento/prueba deberán definirse y probarse antes del laboratorio.
 
-## Pendientes antes de implementar
+## Pendientes técnicos y didácticos
 
-1. Definir cómo serán representados visualmente los productos: imágenes reales, ilustraciones o etiquetas/códigos visuales.
-2. Elegir un método de reconocimiento viable y comprobarlo con fotografías reales de pantallas de celular.
-3. Definir catálogo y metadatos: SKU, nombre, categoría, precio, stock visible y promociones.
-4. Probar el proceso de captura Android → almacenamiento compartido → descarga en laptop.
-5. Verificar resolución, perspectiva, reflejos y legibilidad al fotografiar la pantalla del anaquel.
-6. Definir criterios de aceptación del generador antes de añadir componentes de ML, PLN o chatbot.
+1. Probar la legibilidad del anaquel al fotografiar una pantalla con distintos celulares Android.
+2. Definir el proceso de transferencia de las fotografías mediante un almacenamiento compartido accesible desde el Wi-Fi académico y la red cableada.
+3. Evaluar distorsión de perspectiva, reflejos, resolución y patrones de pantalla.
+4. Elegir un método de visión por computadora realista para 90 minutos y comprobarlo con las fotografías.
+5. Definir los datos de entrenamiento/prueba y las clases de productos.
+6. Decidir cómo ML utilizará los resultados visuales para producir una clasificación o predicción empresarial.
+7. Diseñar los componentes de PLN y sistemas conversacionales para que consuman datos del mismo caso de negocio.
 
 ## Principio de desarrollo
 
-Construir en incrementos pequeños y verificables. Primero debe funcionar el generador de anaqueles; después se integrarán los componentes de visión, ML, PLN y sistemas conversacionales.
+Construir en incrementos pequeños y verificables. El generador debe probarse primero con dispositivos reales; después se integrarán visión por computadora, ML, PLN y sistemas conversacionales.
