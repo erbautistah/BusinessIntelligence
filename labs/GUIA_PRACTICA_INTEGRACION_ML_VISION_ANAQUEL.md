@@ -24,6 +24,37 @@ python -m pip install -r requirements.txt
 
 ## 2. Generar las 15 fotografías y sus etiquetas
 
+Cada equipo debe generar su propio dataset. Las fotografías son **imágenes tomadas con un celular Android a la pantalla del computador donde se muestra el anaquel del generador**. No se deben tomar fotografías de productos reales ni de supermercados.
+
+### Qué distribuciones preparar
+
+| Captura | Distribución del anaquel |
+|---|---|
+| 001 | Distribución equilibrada, con varias categorías y espacios vacíos. |
+| 002 | Escenario «Faltantes de productos». |
+| 003 | Escenario «Anaquel completo» (32 posiciones ocupadas). |
+| 004 | Escenario «Predominio de bebidas». |
+| 005–009 | Cinco distribuciones personalizadas diferentes. Cambiar productos, cantidades y posiciones; procurar incluir las ocho categorías. |
+| 010 | Pocos productos agrupados a la izquierda. |
+| 011 | Pocos productos agrupados al centro o a la derecha. |
+| 012 | Otra distribución de baja ocupación, con productos en filas y columnas diferentes. |
+| 013 | Una distribución nueva con el cursor visible como interferencia moderada, preferentemente sobre un espacio vacío. |
+| 014 | Una distribución nueva con brillo desigual o reflejo moderado en la pantalla. |
+| 015 | Una distribución nueva fotografiada desde un ángulo ligeramente oblicuo o con una oclusión parcial que no impida identificar la cuadrícula. |
+
+Las 15 distribuciones deben ser diferentes. No basta con fotografiar varias veces el mismo anaquel.
+
+### Cómo tomar las fotografías
+
+- Mostrar el anaquel completo en la pantalla, con las 4 filas y 8 columnas visibles.
+- Mantener visibles las cuatro esquinas exteriores de la cuadrícula; no cortar los bordes.
+- Tomar la fotografía en orientación horizontal, enfocada y sin movimiento.
+- Evitar usar zoom digital, flash, filtros o edición posterior.
+- Variar moderadamente distancia, ángulo e iluminación en las capturas indicadas; no deformar tanto la imagen que se pierda la cuadrícula.
+- Para las capturas con interferencia, conservar suficiente visibilidad para que se pueda reconocer la posición y mantener la etiqueta real del JSON. Una celda vacía con el cursor encima sigue siendo la clase empty.
+- Guardar el archivo original en formato JPG.
+
+
 Iniciar el generador desde Git Bash:
 
 ~~~bash
@@ -188,4 +219,3 @@ Responder:
 
 No subir fotografías, JSON de captura, recortes, modelos ni resultados locales al repositorio público. Se puede subir el código fuente.
 
-**La próxima sesión se dedicará a Procesamiento de lenguaje natural y Sistemas conversacionales.**
