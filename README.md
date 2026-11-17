@@ -13,18 +13,29 @@ Construir y evaluar una solución empresarial didáctica que integre:
 3. Procesamiento de lenguaje natural.
 4. Sistemas conversacionales.
 
-## Primer componente: generador de anaqueles
+## Componentes disponibles
 
-Ya está disponible un primer prototipo funcional de una aplicación web 2D con un anaquel de 4 filas × 8 columnas (32 espacios), ocho productos ilustrados localmente, edición de espacios, distribución aleatoria, resumen y modo captura.
+### Generador de anaqueles
 
-**Instrucciones de ejecución:** consulta [shelf-generator/README.md](shelf-generator/README.md).
+Aplicación web 2D con un anaquel de 4 filas × 8 columnas (32 posiciones), ocho productos ilustrados localmente, edición de espacios, escenarios controlados, resumen y exportaciones.
+
+Instrucciones: [shelf-generator/README.md](shelf-generator/README.md).
+
+### OpenCV: primera etapa
+
+Script Python que recibe una fotografía Android, rectifica la perspectiva del anaquel, segmenta las 32 posiciones y detecta ocupado/vacío. Incluye un comparador separado que contrasta esas detecciones con el JSON del generador.
+
+Instrucciones: [cv-lab/README.md](cv-lab/README.md).
+
+**Límite actual:** el primer script de OpenCV detecta posiciones ocupadas/vacías; todavía no clasifica las ocho categorías de productos ni entrena un modelo ML.
 
 ## Estructura
 
-- `shelf-generator/`: aplicación web del generador de anaqueles.
-- `docs/`: documentación técnica y decisiones del proyecto.
-- `labs/`: materiales de los laboratorios (se incorporarán progresivamente).
-- `exam/`: recursos y escenarios de evaluación (se incorporarán cuando corresponda).
+- shelf-generator/: aplicación web del generador.
+- cv-lab/: scripts y dependencias locales para visión por computadora.
+- docs/: documentación técnica y decisiones del proyecto.
+- labs/: materiales de los laboratorios (se incorporarán progresivamente).
+- exam/: recursos y escenarios de evaluación (se incorporarán cuando corresponda).
 
 ## Requisitos y restricciones
 
@@ -36,4 +47,7 @@ Ya está disponible un primer prototipo funcional de una aplicación web 2D con 
 
 ## Estado
 
-**Fase 1: generador de anaqueles — prototipo inicial disponible.** El procesamiento con OpenCV y la integración con ML, PLN y sistemas conversacionales todavía no están implementados.
+- **Generador de anaqueles:** prototipo funcional disponible.
+- **OpenCV etapa 1:** rectificación y detección de ocupación disponibles; pendiente probar en distintos teléfonos y condiciones.
+- **Clasificación de productos con ML:** siguiente etapa, después de reunir fotografías etiquetadas.
+- **PLN y sistema conversacional:** pendientes de desarrollo.
