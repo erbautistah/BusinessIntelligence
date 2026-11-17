@@ -137,7 +137,12 @@ def rectify_shelf(image: np.ndarray, corners: np.ndarray) -> np.ndarray:
                                flags=cv2.INTER_CUBIC)
 
 
-def analyze_occupancy(rectified: np.ndarray) -> tuple[list[dict[str, object]], np.ndarray]:
+def analyze_occupancy(
+    rectified: np.ndarray,
+    saturation_threshold: int = SATURATION_THRESHOLD,
+    value_threshold: int = VALUE_THRESHOLD,
+    occupancy_threshold: float = OCCUPANCY_THRESHOLD,
+) -> tuple[list[dict[str, object]], np.ndarray]:
     """Detect colored product illustrations and label cells occupied/empty."""
     if rectified.shape[1] != WARP_WIDTH or rectified.shape[0] != WARP_HEIGHT:
         raise ValueError("La imagen rectificada tiene dimensiones inesperadas.")
@@ -162,9 +167,9 @@ def analyze_occupancy(rectified: np.ndarray) -> tuple[list[dict[str, object]], n
 
         saturation = icon_roi[:, :, 1]
         value = icon_roi[:, :, 2]
-        color_mask = (saturation > SATURATION_THRESHOLD) & (value > VALUE_THRESHOLD)
+        color_mask = (saturation > saturation_threshold) & (value > value_threshold)
         color_ratio = float(np.count_nonzero(color_mask) / color_mask.size)
-        occupied = color_ratio >= OCCUPANCY_THRESHOLD
+        occupied = color_ratio >= occupancy_threshold
 
         slot_number = index + 1
         label = "OCUPADO" if occupied else "VACÍO"
@@ -223,7 +228,20 @@ def main() -> int:
                         help="Cuatro esquinas x,y separadas por punto y coma (para pruebas).")
     parser.add_argument("--sin-ventanas", action="store_true",
                         help="No mostrar ventanas de resultado (ejecución automatizada).")
+    parser.add_argument("--saturacion-min", type=int, default=SATURATION_THRESHOLD,
+                        help=f"Saturación HSV mínima (0-255, valor inicial: {SATURATION_THRESHOLD}).")
+    parser.add_argument("--brillo-min", type=int, default=VALUE_THRESHOLD,
+                        help=f"Brillo HSV mínimo (0-255, valor inicial: {VALUE_THRESHOLD}).")
+    parser.add_argument("--ratio-min", type=float, default=OCCUPANCY_THRESHOLD,
+                        help=f"Proporción mínima de píxeles de color (0-1, valor inicial: {OCCUPANCY_THRESHOLD}).")
     args = parser.parse_args()
+
+    if not 0 <= args.saturacion_min <= 255:
+        parser.error("--saturacion-min debe estar entre 0 y 255.")
+    if not 0 <= args.brillo_min <= 255:
+        parser.error("--brillo-min debe estar entre 0 y 255.")
+    if not 0 < args.ratio_min <= 1:
+        parser.error("--ratio-min debe ser mayor que 0 y menor o igual que 1.")
 
     try:
         image = read_image(args.imagen)
@@ -231,7 +249,12 @@ def main() -> int:
 
         corners = args.esquinas if args.esquinas is not None else select_corners(image)
         rectified = rectify_shelf(image, corners)
-        detections, annotated = analyze_occupancy(rectified)
+        detections, annotated = analyze_occupancy(
+            rectified,
+            saturation_threshold=args.saturacion_min,
+            value_threshold=args.brillo_min,
+            occupancy_threshold=args.ratio_min,
+        )
 
         occupied = sum(1 for item in detections if item["occupied"])
         empty = len(detections) - occupied
@@ -247,9 +270,9 @@ def main() -> int:
             "scope": "occupancy detection only; no product classification or ML training",
             "grid": {"rows": ROWS, "columns": COLUMNS, "total_slots": ROWS * COLUMNS},
             "thresholds": {
-                "saturation_min": SATURATION_THRESHOLD,
-                "value_min": VALUE_THRESHOLD,
-                "occupancy_ratio_min": OCCUPANCY_THRESHOLD,
+                "saturation_min": args.saturacion_min,
+                "value_min": args.brillo_min,
+                "occupancy_ratio_min": args.ratio_min,
             },
             "summary": {"occupied_slots": occupied, "empty_slots": empty},
             "detections": detections,
@@ -262,6 +285,7 @@ def main() -> int:
         print(f"  Posiciones ocupadas: {occupied}")
         print(f"  Posiciones vacías:   {empty}")
         print(f"  Total de posiciones: {len(detections)}")
+        print("  Parámetros:", f"saturación={args.saturacion_min}, brillo={args.brillo_min}, ratio={args.ratio_min}")
         print(f"\nArchivos guardados en: {args.salida.resolve()}")
         print("  - anaquel_rectificado.png")
         print("  - resultado_ocupacion.png")
