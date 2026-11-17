@@ -122,13 +122,19 @@ function renderProduct(product) {
   use.setAttribute('href', 'assets/products.svg#' + product.symbol);
   art.appendChild(use);
 
+  const info = document.createElement('div');
+  info.className = 'product-info';
+
   const name = document.createElement('span');
   name.className = 'product-name';
   name.textContent = product.name;
+
   const price = document.createElement('span');
   price.className = 'product-price';
   price.textContent = money(product.price);
-  wrapper.append(art, name, price);
+
+  info.append(name, price);
+  wrapper.append(art, info);
   return wrapper;
 }
 
@@ -462,8 +468,9 @@ async function exportPng() {
 
       if (product) {
         svg.appendChild(svgElement('use', { href: '#' + product.symbol, x: x + 37, y: y + 24, width: 100, height: 100 }));
-        svg.appendChild(svgElement('text', { x: x + cellW / 2, y: y + 143, fill: '#34443b', 'font-family': 'Arial,sans-serif', 'font-size': 14, 'font-weight': 700, 'text-anchor': 'middle' }, product.name));
-        svg.appendChild(svgElement('text', { x: x + cellW / 2, y: y + 163, fill: '#6e563a', 'font-family': 'Arial,sans-serif', 'font-size': 13, 'font-weight': 700, 'text-anchor': 'middle' }, money(product.price)));
+        svg.appendChild(svgElement('text', { x: x + cellW / 2, y: y + 137, fill: '#34443b', 'font-family': 'Arial,sans-serif', 'font-size': 13, 'font-weight': 700, 'text-anchor': 'middle' }, product.name));
+        svg.appendChild(svgElement('rect', { x: x + 48, y: y + 145, width: 78, height: 20, rx: 10, fill: '#e8f2ec', stroke: '#c7d9ce', 'stroke-width': 1 }));
+        svg.appendChild(svgElement('text', { x: x + cellW / 2, y: y + 159, fill: '#1e5a48', 'font-family': 'Arial,sans-serif', 'font-size': 12, 'font-weight': 800, 'text-anchor': 'middle' }, money(product.price)));
       } else {
         svg.appendChild(svgElement('text', { x: x + cellW / 2, y: y + 96, fill: '#b29b7c', 'font-family': 'Arial,sans-serif', 'font-size': 34, 'text-anchor': 'middle' }, '+'));
         svg.appendChild(svgElement('text', { x: x + cellW / 2, y: y + 145, fill: '#ad9b84', 'font-family': 'Arial,sans-serif', 'font-size': 13, 'text-anchor': 'middle' }, 'Espacio libre'));
