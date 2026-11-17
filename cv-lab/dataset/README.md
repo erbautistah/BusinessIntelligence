@@ -2,136 +2,129 @@
 
 Esta carpeta organiza las fotografías Android y las etiquetas de referencia para desarrollar y evaluar la solución de visión por computadora y Machine Learning.
 
-## Estructura
+## Estructura y ubicación de los archivos
 
-- images/raw/: fotografías originales tomadas con Android. No modificar ni sobrescribir.
-- images/rectified/: resultados rectificados por OpenCV.
-- images/crops/: recortes generados automáticamente para cada posición.
-- labels/: JSON de referencia exportado por el generador.
-- manifests/: CSV que registra cada recorte, su captura de origen y su etiqueta.
+Todos los archivos de captura se guardan localmente en la laptop del grupo, dentro de \`cv-lab/dataset/\`. **No se suben las fotografías a GitHub.**
 
-Las subcarpetas de imágenes se mantienen localmente y están excluidas del control de versiones por tamaño. Los archivos .gitkeep conservan la estructura al clonar el repositorio.
+- \`images/raw/\`: fotografías originales Android (JPG).
+- \`images/rectified/\`: imágenes rectificadas por OpenCV.
+- \`images/crops/\`: recortes automáticos de cada posición.
+- \`labels/\`: JSON exportados por el generador.
+- \`manifests/\`: CSV que registra cada recorte y su etiqueta.
 
-## Mínimo acordado para la actividad: 15 fotografías distintas
+## Plan exacto: 15 fotografías de 15 distribuciones diferentes
 
-Cada grupo preparará **al menos 15 fotografías completas**, una por cada configuración diferente del anaquel. Cada imagen tendrá su JSON correspondiente.
+Cada fotografía debe mostrar una distribución diferente del anaquel. Para cada una debes guardar **dos archivos obligatorios**: la foto JPG de Android y el JSON de esa misma distribución.
 
-No tomaremos tres fotografías de una misma distribución para contarlas como tres configuraciones. Eso solo cambia la cámara, pero repite la disposición y reduce la diversidad de ejemplos.
-
-Plan de captura:
-
-| Fotos | Configuración | Qué variar |
+| N.º | Qué debes configurar antes de fotografiar | Qué variación se busca |
 |---|---|---|
-| 001–004 | Cuatro escenarios predefinidos | Equilibrado, faltantes, completo y predominio de bebidas. La 001 ya está capturada. |
-| 005–009 | Cinco distribuciones personalizadas | Cambiar posiciones y cantidades; procurar que aparezcan todas las categorías. |
-| 010–012 | Tres distribuciones de baja ocupación o productos concentrados | Varios espacios vacíos y productos agrupados en distintas zonas. |
-| 013–015 | Tres distribuciones diferentes con interferencias visuales moderadas | Cursor, reflejo, brillo desigual u oclusión parcial simulada. Cada una debe seguir mostrando claramente el anaquel. |
+| 001 | Exhibición equilibrada. **Ya realizada**; conservar la foto y el JSON existentes. | Primera referencia; cursor visible en una posición vacía. |
+| 002 | Aplicar el escenario «Faltantes de productos». | Una distribución distinta con productos ausentes. |
+| 003 | Aplicar «Anaquel completo». | Los 32 espacios ocupados. |
+| 004 | Aplicar «Predominio de bebidas». | Mayor presencia de agua, gaseosa y jugo. |
+| 005 | Crear una distribución personalizada: cambiar productos y posiciones de varias celdas. | Mezcla variada, con presencia de las ocho categorías. |
+| 006 | Crear otra distribución personalizada, diferente de la 005. | Reubicar categorías en otras filas y columnas. |
+| 007 | Crear otra distribución personalizada, diferente de las anteriores. | Cambiar cantidades y dejar algunos espacios vacíos. |
+| 008 | Crear otra distribución personalizada. | Procurar que productos menos frecuentes aparezcan en varias zonas. |
+| 009 | Crear otra distribución personalizada. | Una combinación distinta, procurando representar las ocho categorías. |
+| 010 | Crear una distribución con baja ocupación. | Pocos productos agrupados a la izquierda. |
+| 011 | Crear otra distribución con baja ocupación, diferente de la 010. | Productos agrupados al centro o a la derecha. |
+| 012 | Crear una tercera distribución con baja ocupación. | Productos distribuidos en otra combinación de filas y columnas. |
+| 013 | Crear una distribución nueva y activar una interferencia moderada (por ejemplo, cursor sobre una celda). | Mantener visible la cuadrícula y el producto real de cada posición. |
+| 014 | Crear otra distribución nueva y añadir una interferencia moderada (por ejemplo, reflejo o brillo desigual). | No repetir la distribución 013. |
+| 015 | Crear otra distribución nueva y capturar desde un ángulo algo más oblicuo u ocluir parcialmente una ilustración sin ocultar la cuadrícula. | Probar una condición menos perfecta, pero todavía interpretable. |
 
-Las 15 deben tener distribuciones diferentes. También se variarán moderadamente distancia, ángulo y condiciones de luz, sin perder las cuatro esquinas de la cuadrícula.
+Los escenarios predefinidos pueden cambiar las posiciones al pulsar «Aplicar escenario». Comprueba el anaquel y exporta su JSON después de aplicar cada escenario.
 
-### Cobertura de categorías
+Las capturas 005–015 deben tener **configuraciones diferentes**, no basta con tomar otra foto del mismo anaquel. También puede variar moderadamente la distancia o el ángulo, pero la variación principal debe ser la distribución de productos.
 
-El catálogo tiene ocho clases de producto. Durante la creación de las distribuciones, procura que:
-- cada producto aparezca repetidamente;
-- cada producto aparezca en distintas filas y columnas;
-- ninguna categoría quede casi ausente del conjunto;
-- las distribuciones de baja ocupación no eliminen siempre las mismas clases.
+### Qué archivos guardar para cada número
 
-Después de generar el manifiesto, revisaremos los conteos por categoría y por captura. Si alguna categoría tiene pocos ejemplos, se añadirán fotografías dirigidas a cubrir esa falta. Quince es el mínimo de partida, no una garantía de que el dataset ya sea suficiente para entrenar y evaluar bien.
-
-## Cómo registrar cada captura
-
-Para cada una de las 15 configuraciones:
-
-1. En el generador, configura una distribución diferente.
-2. Exporta el JSON de esa distribución.
-3. Fotografía el anaquel con Android.
-4. Copia la foto original a images/raw/.
-5. Copia el JSON a labels/.
-6. Usa el mismo nombre base para ambos archivos.
-
-Ejemplo:
+Ejemplo para la captura 002:
 
 ~~~text
-images/raw/captura_001.jpg
-labels/captura_001.json
+cv-lab/dataset/
+├── images/
+│   └── raw/
+│       └── captura_002.jpg       # foto original tomada con Android
+└── labels/
+    └── captura_002.json          # JSON exportado para ESA distribución
 ~~~
 
-Cada fotografía tendrá su propio JSON porque cada distribución es distinta. No reutilices un JSON de otra distribución.
+Repite el patrón para 001–015. Los nombres base deben coincidir exactamente:
 
-## Fotografías con interferencias
+- \`images/raw/captura_001.jpg\` ↔ \`labels/captura_001.json\`
+- \`images/raw/captura_002.jpg\` ↔ \`labels/captura_002.json\`
+- …
+- \`images/raw/captura_015.jpg\` ↔ \`labels/captura_015.json\`
 
-Las imperfecciones son parte de la prueba, no errores que deban eliminarse siempre. Se pueden incluir:
-- cursor visible sobre el anaquel;
-- reflejo o brillo desigual de la pantalla;
-- objeto que tape parcialmente una ilustración;
-- perspectiva algo más oblicua.
+**Obligatorio:** JPG Android + JSON correspondiente.
 
-La etiqueta debe describir el contenido real de la posición, no el artefacto:
-- Si la posición está vacía y aparece el cursor, sigue siendo empty.
-- Si se ve parcialmente un producto identificable, se etiqueta con el producto real y se registra la interferencia para revisión.
-- Si no se puede determinar qué producto hay, no se inventa la etiqueta; esa muestra se marca para revisión o se excluye del entrenamiento.
+**No obligatorio:** PNG exportado por el generador. El PNG puede guardarse como referencia visual si ayuda a revisar la distribución, pero OpenCV no lo usa para detectar ni para preparar el dataset. La entrada visual del análisis es el JPG Android; el JSON sirve para etiquetar y comprobar.
 
-Las fotografías del anaquel virtual permiten estudiar cursor, perspectiva, reflejos y oclusiones simuladas. No equivalen a imágenes de anaqueles físicos con polvo, insectos, empaques deteriorados o estructuras rotas.
+### Pasos para producir cada par JPG + JSON
 
-## Preparación automática de recortes
+1. Abre el generador en la computadora.
+2. Aplica o construye la distribución indicada en la tabla.
+3. Pulsa «Datos JSON» y guarda el archivo.
+4. Renómbralo con el número de captura, por ejemplo \`captura_002.json\`.
+5. Activa «Modo captura».
+6. Fotografía la pantalla con la cámara Android; conserva el JPG original sin filtros.
+7. Copia el JPG a \`dataset/images/raw/\` con el nombre correspondiente, por ejemplo \`captura_002.jpg\`.
+8. Copia el JSON a \`dataset/labels/\` con el mismo nombre base.
+9. Comprueba que el JPG y el JSON pertenecen a la misma distribución antes de continuar.
 
-Desde cv-lab/, con el entorno virtual activo:
+No cambies la distribución entre exportar el JSON y tomar su fotografía.
+
+### Variaciones e interferencias
+
+Las imperfecciones moderadas se incluyen para probar robustez: cursor, reflejo, brillo desigual, perspectiva u oclusión parcial. La etiqueta debe describir el contenido real:
+- Una celda vacía con cursor sigue siendo \`empty\`.
+- Un producto parcialmente tapado conserva su clase si sigue siendo identificable.
+- Si no se puede determinar qué producto aparece, no inventes una etiqueta; deja esa muestra para revisión o exclúyela del entrenamiento.
+
+Este anaquel virtual no simula por completo productos ni anaqueles físicos reales.
+
+## Después de guardar las 15 parejas
+
+Desde \`cv-lab/\`, con el entorno virtual activo, ejecuta una sola vez:
 
 ~~~bash
 python preparar_dataset.py
 ~~~
 
-El programa recorre las fotos de images/raw/. Para cada foto:
-1. solicita seleccionar cuatro esquinas de la cuadrícula;
-2. rectifica la perspectiva;
-3. recorta automáticamente las 32 posiciones;
-4. lee el JSON de igual nombre;
-5. guarda cada recorte en la carpeta de su clase o en empty/;
-6. registra el resultado en manifests/recortes.csv.
+El programa recorre \`images/raw/\`, busca el JSON del mismo nombre en \`labels/\`, solicita seleccionar cuatro esquinas por fotografía y genera automáticamente:
+- una imagen rectificada por captura;
+- 32 recortes por captura, organizados por clase o en \`empty/\`;
+- \`manifests/recortes.csv\` con la trazabilidad de cada recorte.
 
-Se marcan las esquinas una vez por foto. No es necesario ejecutar el programa por separado para cada imagen.
+No necesitas ejecutar el programa 15 veces. Sí debes seleccionar las cuatro esquinas una vez por cada fotografía.
 
-## Estructura de los recortes
+## Resultado esperado
 
-~~~text
-images/crops/
-├── water/
-├── milk/
-├── soda/
-├── juice/
-├── cookies/
-├── cereal/
-├── canned/
-├── detergent/
-└── empty/
-~~~
+Con 15 parejas JPG + JSON:
+- 15 fotografías originales.
+- 15 JSON de referencia.
+- Hasta 480 recortes (15 × 32), incluyendo posiciones vacías.
+- Un manifiesto con hasta 480 filas de recortes.
 
-Cada recorte conserva el nombre de captura y posición, por ejemplo captura_001_slot_03.png. La carpeta empty/ contiene posiciones sin producto; no es una categoría de producto.
+Los 480 recortes no son 480 fotografías independientes: los 32 recortes de una captura comparten condiciones de cámara y perspectiva.
 
-Quince fotografías producen hasta 480 recortes (32 posiciones por captura). Los recortes vacíos forman parte de esos 480; el número de recortes de productos será menor. Los 480 recortes tampoco son 480 fotografías independientes: 32 recortes comparten una misma captura y sus condiciones.
+## Entrenamiento, validación y prueba
 
-## Separación para entrenamiento, validación y prueba
-
-La separación se hará por fotografía/configuración, no mezclando recortes al azar. Como punto de partida se puede usar:
+La separación se realizará por fotografía/configuración, no mezclando recortes de una misma captura. Como punto inicial se propone:
 - 9 capturas para entrenamiento;
 - 3 para validación;
 - 3 para prueba final.
 
-Antes de fijar esa división se comprobará que las ocho clases estén representadas en los tres conjuntos. Si no lo están, se ajustarán las distribuciones o se recogerán más fotografías.
-
-Las imágenes de prueba no se utilizarán para entrenar, ajustar umbrales ni escoger el modelo. Con solo 15 capturas, las métricas serán una evaluación didáctica inicial, no una demostración de generalización a cualquier anaquel o cámara.
+Antes de fijar la división comprobaremos que las ocho categorías aparezcan en los tres conjuntos. Si una categoría queda fuera o tiene muy pocos ejemplos, se deben añadir capturas dirigidas. Quince fotografías son un mínimo de partida, no garantía de suficiencia.
 
 ## Qué no hacer
 
-- No editar las fotografías originales.
-- No aplicar filtros ni compresión adicional.
-- No asociar un JSON si no corresponde exactamente a la distribución fotografiada.
+- No editar las fotos originales ni aplicar filtros.
+- No asociar un JSON de otra distribución.
+- No cambiar el anaquel entre exportar el JSON y tomar la foto.
 - No repartir recortes de una misma captura entre entrenamiento y prueba.
-- No asumir que una foto desenfocada o incompleta debe usarse para entrenar sin revisar su utilidad y etiqueta.
+- No fotografiar personas ni información personal.
 
-## Privacidad y Git
-
-Las fotos originales, rectificadas y los recortes no se suben automáticamente a GitHub. Permanecen en la laptop del grupo. No fotografíes personas ni información personal.
-
-Las etiquetas JSON y el manifiesto CSV contienen metadatos de las posiciones, no datos personales. La carpeta no debe contener datos personales.
+Las fotografías y recortes permanecen en la laptop del grupo y están excluidos de GitHub para evitar subir archivos pesados.
