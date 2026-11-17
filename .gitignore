@@ -30,3 +30,9 @@ cv-lab/dataset/images/rectified/*
 !cv-lab/dataset/images/rectified/.gitkeep
 cv-lab/dataset/images/crops/*
 !cv-lab/dataset/images/crops/.gitkeep
+
+# Etiquetas y manifiestos del dataset de cada grupo (datos locales)
+cv-lab/dataset/labels/*
+!cv-lab/dataset/labels/.gitkeep
+cv-lab/dataset/manifests/*
+!cv-lab/dataset/manifests/.gitkeep
