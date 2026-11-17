@@ -43,7 +43,13 @@ dataset/
     └── recortes.csv
 ~~~
 
-Extraer o copiar la carpeta \`dataset\` dentro de \`tienda-inteligente/cv-lab/\`. Comprobar que exista:
+Crear las carpetas para la nueva captura y copiar el paquete del docente dentro de `tienda-inteligente/cv-lab/`:
+
+~~~bash
+mkdir -p dataset/images/raw dataset/labels
+~~~
+
+Comprobar que exista:
 
 ~~~text
 cv-lab/dataset/manifests/recortes.csv
@@ -53,7 +59,7 @@ El paquete contiene los 480 recortes etiquetados de las 15 capturas. No es neces
 
 ## 3. Entrenar y revisar el modelo
 
-Desde la carpeta \`cv-lab\`, con el entorno virtual activo:
+Desde la carpeta `cv-lab`, con el entorno virtual activo:
 
 ~~~bash
 python entrenar_modelo.py
@@ -71,22 +77,22 @@ Anotar dos categorías con dificultades y revisar al menos dos errores de la gal
 
 ## 4. Crear el programa de predicción del anaquel
 
-Crear \`predecir_anaquel.py\` dentro de \`cv-lab/\`.
+Crear `predecir_anaquel.py` dentro de `cv-lab/`.
 
 El programa recibirá una fotografía y utilizará el modelo entrenado para clasificar sus 32 posiciones. No debe utilizar el JSON durante la predicción.
 
 ### Procesamiento requerido
 
 1. Cargar la fotografía indicada como argumento.
-2. Reutilizar de \`analizar_anaquel.py\` las funciones \`read_image()\`, \`select_corners()\` y \`rectify_shelf()\`.
-3. Cargar \`salida_ml/modelo_hog_svm.yml\` con \`cv2.ml.SVM_load()\`.
-4. Leer \`salida_ml/modelo_hog_svm.json\` para recuperar las clases y la configuración HOG.
-5. Recorrer las 32 posiciones y extraer cada recorte con \`crop_slot()\` de \`preparar_dataset.py\`.
+2. Reutilizar de `analizar_anaquel.py` las funciones `read_image()`, `select_corners()` y `rectify_shelf()`.
+3. Cargar `salida_ml/modelo_hog_svm.yml` con `cv2.ml.SVM_load()`.
+4. Leer `salida_ml/modelo_hog_svm.json` para recuperar las clases y la configuración HOG.
+5. Recorrer las 32 posiciones y extraer cada recorte con `crop_slot()` de `preparar_dataset.py`.
 6. Para cada recorte:
    - Convertir a escala de grises.
    - Redimensionar a 72 × 96 píxeles.
    - Extraer HOG con la misma configuración del entrenamiento: ventana 72 × 96, bloque 16 × 16, desplazamiento 8 × 8, celda 8 × 8 y 9 orientaciones.
-   - Enviar el descriptor al SVM y convertir la salida al nombre de clase usando la lista \`classes\` del archivo JSON del modelo.
+   - Enviar el descriptor al SVM y convertir la salida al nombre de clase usando la lista `classes` del archivo JSON del modelo.
 
 Fragmento para preparar cada imagen:
 
@@ -98,19 +104,19 @@ descriptor = hog.compute(fixed)
 
 ### Archivos que debe generar
 
-Guardar dentro de \`salida_ml/\`:
+Guardar dentro de `salida_ml/`:
 
 | Archivo | Contenido |
 |---|---|
-| \`anaquel_predicho.png\` | Anaquel rectificado con la clase predicha en cada posición. |
-| \`predicciones.csv\` | Número de posición y clase predicha. |
-| \`inventario_predicho.json\` | Cantidad de posiciones predichas por categoría y total de vacíos. |
+| `anaquel_predicho.png` | Anaquel rectificado con la clase predicha en cada posición. |
+| `predicciones.csv` | Número de posición y clase predicha. |
+| `inventario_predicho.json` | Cantidad de posiciones predichas por categoría y total de vacíos. |
 
 El inventario es una estimación de lo que aparece en el anaquel; no representa el stock total de almacén.
 
 ## 5. Probar con una distribución nueva
 
-Crear una distribución personalizada en el generador incluido en \`shelf-generator/\`. Debe ser diferente de las 15 utilizadas para entrenar y evaluar el modelo.
+Crear una distribución personalizada en el generador incluido en `shelf-generator/`. Debe ser diferente de las 15 utilizadas para entrenar y evaluar el modelo.
 
 1. Iniciar el generador desde Git Bash:
 
@@ -121,9 +127,9 @@ python -m http.server 8000
 
 2. Abrir http://localhost:8000.
 3. Crear una distribución con varias categorías y espacios vacíos.
-4. Exportar el JSON y guardarlo como \`captura_016.json\`.
+4. Exportar el JSON y guardarlo como `captura_016.json`.
 5. Activar el modo captura y fotografiar el anaquel con un celular Android.
-6. Guardar la fotografía como \`captura_016.jpg\`.
+6. Guardar la fotografía como `captura_016.jpg`.
 
 Copiar los archivos a:
 
@@ -134,7 +140,13 @@ cv-lab/dataset/labels/captura_016.json
 
 Transferir la fotografía a la laptop por el medio disponible. No modificar la distribución entre exportar el JSON y tomar la foto.
 
-Detener el servidor del generador con \`Ctrl + C\`. Volver a Git Bash en \`cv-lab\` y ejecutar:
+Detener el servidor del generador con `Ctrl + C` y regresar a la carpeta de trabajo:
+
+~~~bash
+cd ../cv-lab
+~~~
+
+Ejecutar:
 
 ~~~bash
 python predecir_anaquel.py "dataset/images/raw/captura_016.jpg"
@@ -159,10 +171,10 @@ Accuracy = posiciones correctas / 32
 
 **Entregables del equipo:**
 
-1. \`predecir_anaquel.py\`.
-2. \`anaquel_predicho.png\`.
-3. \`predicciones.csv\` e \`inventario_predicho.json\`.
-4. \`captura_016.jpg\` y \`captura_016.json\`.
+1. `predecir_anaquel.py`.
+2. `anaquel_predicho.png`.
+3. `predicciones.csv` e `inventario_predicho.json`.
+4. `captura_016.jpg` y `captura_016.json`.
 5. Una tabla de comparación de las 32 posiciones y una conclusión breve: ¿qué categorías confundió el modelo y qué pudo causar esos errores?
 
 No subir fotografías, recortes, modelos ni resultados locales al repositorio público. Se puede subir el código fuente.
