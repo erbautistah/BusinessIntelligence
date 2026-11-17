@@ -109,6 +109,25 @@ Las fotografías múltiples se recopilarán para:
 
 Todavía no se ha implementado el recorte etiquetado ni el entrenamiento del clasificador.
 
+## Captura y preparación del dataset
+
+Se acordó un mínimo de **15 fotografías completas por grupo**, tomadas con Android, acompañadas de un JSON de referencia por captura.
+
+Plan recomendado: cinco distribuciones (los cuatro escenarios preparados y una personalizada), con tres capturas por distribución. Se varía moderadamente distancia, perspectiva y condiciones de luz. Cuando una distribución se fotografía varias veces, se copia el JSON correspondiente y se renombra con el mismo nombre base de cada foto.
+
+Se incorporó \`cv-lab/preparar_dataset.py\`. En una sola ejecución:
+1. recorre todas las fotografías de \`dataset/images/raw/\`;
+2. busca el JSON correspondiente en \`dataset/labels/\`;
+3. solicita seleccionar las cuatro esquinas de cada fotografía;
+4. rectifica el anaquel;
+5. extrae automáticamente las 32 regiones;
+6. asigna las etiquetas usando el JSON;
+7. organiza los recortes por clase y genera \`dataset/manifests/recortes.csv\`.
+
+En esta versión se seleccionan cuatro esquinas manualmente **una vez por fotografía**. La automatización de esa localización queda como mejora futura.
+
+Los recortes están organizados en ocho carpetas de producto y una carpeta \`empty/\` para posiciones vacías. Se obtienen hasta 480 recortes por grupo con 15 fotografías; no son 480 imágenes independientes, ya que 32 proceden de la misma captura. La futura división de entrenamiento/validación/prueba se realizará por captura para evitar fuga de datos.
+
 ## Separación entre práctica y evaluación
 
 La intención es reutilizar la arquitectura del generador, pero diferenciar el catálogo y los requerimientos del laboratorio y del examen práctico. El generador permite crear escenarios de supermercado de práctica; la evaluación podrá utilizar un catálogo diferente, siempre que el método de visión y las clases se preparen y validen antes.
