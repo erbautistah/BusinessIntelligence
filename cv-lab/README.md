@@ -79,6 +79,17 @@ El programa se detiene si falta alguna categoría en entrenamiento. Si una categ
 
 La división 9/3/3 conserva la planificación original de variaciones: las capturas de prueba 013–015 contienen condiciones menos favorables. Es una primera evaluación controlada, no una garantía de generalización.
 
+### Informe visual para estudiantes
+
+Al finalizar se genera **salida_ml/informe_evaluacion.html**. Ábrelo con Chrome o Edge. Presenta:
+- Indicadores generales de prueba (accuracy, F1 macro, F1 ponderado y cantidad de errores).
+- Tabla de precision, recall y F1 por categoría.
+- Matriz de confusión visual: diagonal = aciertos; fuera de la diagonal = confusiones.
+- Galería de los recortes mal clasificados, con etiqueta real y predicción del modelo.
+- Contexto de la división y limitaciones de la evaluación.
+
+Este HTML es el informe de lectura para la práctica. Los CSV se conservan como archivos de datos para análisis adicional, no como interfaz principal para estudiantes.
+
 ### Archivos de salida
 
 Se guardan localmente en salida_ml/ (excluida de GitHub):
