@@ -4,13 +4,13 @@ Esta carpeta organiza las fotografías Android y las etiquetas de referencia par
 
 ## Estructura y ubicación de los archivos
 
-Todos los archivos de captura se guardan localmente en la laptop del grupo, dentro de \`cv-lab/dataset/\`. **No se suben las fotografías a GitHub.**
+Todos los archivos de captura se guardan localmente en la laptop del grupo, dentro de `cv-lab/dataset/`. **No se suben las fotografías a GitHub.**
 
-- \`images/raw/\`: fotografías originales Android (JPG).
-- \`images/rectified/\`: imágenes rectificadas por OpenCV.
-- \`images/crops/\`: recortes automáticos de cada posición.
-- \`labels/\`: JSON exportados por el generador.
-- \`manifests/\`: CSV que registra cada recorte y su etiqueta.
+- `images/raw/`: fotografías originales Android (JPG).
+- `images/rectified/`: imágenes rectificadas por OpenCV.
+- `images/crops/`: recortes automáticos de cada posición.
+- `labels/`: JSON exportados por el generador.
+- `manifests/`: CSV que registra cada recorte y su etiqueta.
 
 ## Plan exacto: 15 fotografías de 15 distribuciones diferentes
 
@@ -18,7 +18,7 @@ Cada fotografía debe mostrar una distribución diferente del anaquel. Para cada
 
 | N.º | Qué debes configurar antes de fotografiar | Qué variación se busca |
 |---|---|---|
-| 001 | Exhibición equilibrada. **Ya realizada**; conservar la foto y el JSON existentes. | Primera referencia; cursor visible en una posición vacía. |
+| 001 | Exhibición equilibrada con varias categorías y algunos espacios vacíos. | Primera referencia del conjunto. |
 | 002 | Aplicar el escenario «Faltantes de productos». | Una distribución distinta con productos ausentes. |
 | 003 | Aplicar «Anaquel completo». | Los 32 espacios ocupados. |
 | 004 | Aplicar «Predominio de bebidas». | Mayor presencia de agua, gaseosa y jugo. |
@@ -53,10 +53,10 @@ cv-lab/dataset/
 
 Repite el patrón para 001–015. Los nombres base deben coincidir exactamente:
 
-- \`images/raw/captura_001.jpg\` ↔ \`labels/captura_001.json\`
-- \`images/raw/captura_002.jpg\` ↔ \`labels/captura_002.json\`
+- `images/raw/captura_001.jpg` ↔ `labels/captura_001.json`
+- `images/raw/captura_002.jpg` ↔ `labels/captura_002.json`
 - …
-- \`images/raw/captura_015.jpg\` ↔ \`labels/captura_015.json\`
+- `images/raw/captura_015.jpg` ↔ `labels/captura_015.json`
 
 **Obligatorio:** JPG Android + JSON correspondiente.
 
@@ -67,11 +67,11 @@ Repite el patrón para 001–015. Los nombres base deben coincidir exactamente:
 1. Abre el generador en la computadora.
 2. Aplica o construye la distribución indicada en la tabla.
 3. Pulsa «Datos JSON» y guarda el archivo.
-4. Renómbralo con el número de captura, por ejemplo \`captura_002.json\`.
+4. Renómbralo con el número de captura, por ejemplo `captura_002.json`.
 5. Activa «Modo captura».
 6. Fotografía la pantalla con la cámara Android; conserva el JPG original sin filtros.
-7. Copia el JPG a \`dataset/images/raw/\` con el nombre correspondiente, por ejemplo \`captura_002.jpg\`.
-8. Copia el JSON a \`dataset/labels/\` con el mismo nombre base.
+7. Copia el JPG a `dataset/images/raw/` con el nombre correspondiente, por ejemplo `captura_002.jpg`.
+8. Copia el JSON a `dataset/labels/` con el mismo nombre base.
 9. Comprueba que el JPG y el JSON pertenecen a la misma distribución antes de continuar.
 
 No cambies la distribución entre exportar el JSON y tomar su fotografía.
@@ -79,7 +79,7 @@ No cambies la distribución entre exportar el JSON y tomar su fotografía.
 ### Variaciones e interferencias
 
 Las imperfecciones moderadas se incluyen para probar robustez: cursor, reflejo, brillo desigual, perspectiva u oclusión parcial. La etiqueta debe describir el contenido real:
-- Una celda vacía con cursor sigue siendo \`empty\`.
+- Una celda vacía con cursor sigue siendo `empty`.
 - Un producto parcialmente tapado conserva su clase si sigue siendo identificable.
 - Si no se puede determinar qué producto aparece, no inventes una etiqueta; deja esa muestra para revisión o exclúyela del entrenamiento.
 
@@ -87,16 +87,16 @@ Este anaquel virtual no simula por completo productos ni anaqueles físicos real
 
 ## Después de guardar las 15 parejas
 
-Desde \`cv-lab/\`, con el entorno virtual activo, ejecuta una sola vez:
+Desde `cv-lab/`, con el entorno virtual activo, ejecuta una sola vez:
 
 ~~~bash
 python preparar_dataset.py
 ~~~
 
-El programa recorre \`images/raw/\`, busca el JSON del mismo nombre en \`labels/\`, solicita seleccionar cuatro esquinas por fotografía y genera automáticamente:
+El programa recorre `images/raw/`, busca el JSON del mismo nombre en `labels/`, solicita seleccionar cuatro esquinas por fotografía y genera automáticamente:
 - una imagen rectificada por captura;
-- 32 recortes por captura, organizados por clase o en \`empty/\`;
-- \`manifests/recortes.csv\` con la trazabilidad de cada recorte.
+- 32 recortes por captura, organizados por clase o en `empty/`;
+- `manifests/recortes.csv` con la trazabilidad de cada recorte.
 
 No necesitas ejecutar el programa 15 veces. Sí debes seleccionar las cuatro esquinas una vez por cada fotografía.
 
